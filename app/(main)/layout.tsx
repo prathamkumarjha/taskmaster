@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { dark } from "@clerk/themes";
+import { shadesOfPurple } from "@clerk/themes";
 import { Separator } from "@/components/ui/separator";
 import { UserButton } from "@clerk/nextjs";
 import { OrganizationSwitcher } from "@clerk/nextjs";
@@ -25,14 +25,14 @@ export default function Nav({ children }: { children: React.ReactNode }) {
             <div className="mr-4 ">
               <OrganizationSwitcher
                 appearance={{
-                  baseTheme: dark,
+                  baseTheme: shadesOfPurple,
                 }}
                 hidePersonal={true}
               />
             </div>
             <UserButton
               appearance={{
-                baseTheme: dark,
+                baseTheme: shadesOfPurple,
               }}
             />
           </div>
