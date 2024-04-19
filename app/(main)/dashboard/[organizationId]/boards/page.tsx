@@ -1,11 +1,9 @@
 "use client";
-import Sidebar from "../../_components/sidebar";
 import { useRouter } from "next/navigation";
 import { useOrganization } from "@clerk/clerk-react";
 import { useEffect } from "react";
 export default function Page() {
   const { organization } = useOrganization();
-  console.log(organization?.id);
   const organizationId = organization?.id;
   const router = useRouter();
 
@@ -16,8 +14,9 @@ export default function Page() {
   }, [organizationId, router]);
 
   return (
-    <div className="bg-gray-800 min-h-screen text-stone-300 flex">
-      <Sidebar />
+    <div>
+      we will work here too...
+      {/* <Sidebar /> */}
       {/* we will work on it */}
     </div>
   );
