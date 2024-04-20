@@ -28,11 +28,11 @@ export default function YourComponent() {
     <div>
       <h1 className="text-2xl font-semibold">Workspaces</h1>
       {userMemberships?.data?.map((membership) => (
-        <div key={membership.id}>
+        <div key={membership.id} className=" flex flex-row  justify-center">
           <Accordion type="single" collapsible className="pt-4">
             <AccordionItem value={membership.id}>
               <AccordionTrigger>
-                <div className="flex items-center">
+                <div className="flex items-center ">
                   <div className="rounded-full overflow-hidden mr-4">
                     <Image
                       alt="organization logo"
@@ -45,39 +45,42 @@ export default function YourComponent() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div
-                  onClick={() =>
-                    setActive &&
-                    setActive({ organization: membership.organization.id })
-                  }
-                >
-                  <button>Boards</button>
-                </div>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    console.log("Notifications clicked");
-                  }}
-                >
-                  <button>Notifications</button>
-                </div>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setActive &&
-                      setActive({ organization: membership.organization.id });
-                    router.push(`settings`);
-                  }}
-                >
-                  <button>Settings</button>
-                </div>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    console.log("Plans clicked");
-                  }}
-                >
-                  <button>Plans</button>
+                <div className="pl-10 ">
+                  <div
+                    onClick={() => {
+                      setActive &&
+                        setActive({ organization: membership.organization.id });
+                      router.push(`boards`);
+                    }}
+                  >
+                    <button>Boards</button>
+                  </div>
+                  <div
+                    className="cursor-pointer "
+                    onClick={() => {
+                      console.log("Notifications clicked");
+                    }}
+                  >
+                    <button> Notifications</button>
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setActive &&
+                        setActive({ organization: membership.organization.id });
+                      router.push(`settings`);
+                    }}
+                  >
+                    <button>Settings</button>
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      console.log("Plans clicked");
+                    }}
+                  >
+                    <button>Plans</button>
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -7,7 +7,7 @@ import { OrganizationSwitcher } from "@clerk/nextjs";
 export default function Nav({ children }: { children: React.ReactNode }) {
   return (
     <nav className="">
-      <div className="mx-auto  bg-gray-800 sticky top-0 z-10">
+      <div className="mx-auto  bg-custom-blue sticky top-0 z-10">
         <div className="flex justify-between h-16 px-4">
           <div className="flex-shrink-0 flex items-center">
             <Image
