@@ -1,29 +1,29 @@
+"use client";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useOrganizationList } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 export default function YourComponent() {
   const router = useRouter();
+  const params = useParams();
   const { setActive, userMemberships } = useOrganizationList({
     userMemberships: {
       infinite: true,
     },
   });
-
+  const pathname = usePathname();
   if (!userMemberships) {
     return null;
   }
-
-  {
-    userMemberships.data?.map((membership) =>
-      console.log(membership.organization.id)
-    );
-  }
+  console.log(pathname);
   return (
     <div>
       <h1 className="text-2xl font-semibold">Workspaces</h1>
@@ -33,7 +33,7 @@ export default function YourComponent() {
             <AccordionItem value={membership.id}>
               <AccordionTrigger>
                 <div className="flex items-center ">
-                  <div className="rounded-full overflow-hidden mr-4">
+                  <div className="rounded-full overflow-hidden mr-4 ">
                     <Image
                       alt="organization logo"
                       src={membership.organization.imageUrl}
@@ -41,45 +41,105 @@ export default function YourComponent() {
                       height={40}
                     />
                   </div>
-                  <span>{membership.organization.name}</span>
+                  <span
+                    className={cn(
+                      "transition-all duration-300 hover:text-blue-600" &&
+                        params.organizationId === membership.organization.id &&
+                        "text-blue-600"
+                    )}
+                  >
+                    {membership.organization.name}
+                  </span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="pl-10 ">
                   <div
+                    className={cn(
+                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
+                      pathname ===
+                        `/dashboard/${membership.organization.id}/boards`
+                        ? "bg-blue-600 rounded-l-lg text-white"
+                        : ""
+                    )}
                     onClick={() => {
                       setActive &&
                         setActive({ organization: membership.organization.id });
                       router.push(`boards`);
                     }}
                   >
-                    <button>Boards</button>
+                    <button className="flex">
+                      <Image
+                        alt="kanban svg"
+                        src="/kanban.svg"
+                        width={20}
+                        height={20}
+                        className="pr-1"
+                      />
+                      Boards
+                    </button>
                   </div>
                   <div
-                    className="cursor-pointer "
+                    className="p-2 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
                       console.log("Notifications clicked");
                     }}
                   >
-                    <button> Notifications</button>
+                    <button className="flex">
+                      <Image
+                        alt="notification svg"
+                        src="/notification.svg"
+                        width={20}
+                        height={20}
+                        className="pr-1"
+                      />
+                      Notifications
+                    </button>
                   </div>
                   <div
-                    className="cursor-pointer"
+                    className={cn(
+                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
+                      pathname ===
+                        `/dashboard/${membership.organization.id}/settings`
+                        ? "bg-blue-600 rounded-l-lg text-white"
+                        : ""
+                    )}
                     onClick={() => {
                       setActive &&
                         setActive({ organization: membership.organization.id });
-                      router.push(`settings`);
+                      router.push(
+                        `/dashboard/${membership.organization.id}/settings`
+                      );
                     }}
                   >
-                    <button>Settings</button>
+                    <button className="flex">
+                      <Image
+                        alt="setting svg"
+                        src="/setting.svg"
+                        width={20}
+                        height={20}
+                        className="pr-1"
+                      />
+                      Settings
+                    </button>
                   </div>
+
                   <div
-                    className="cursor-pointer"
+                    className="p-2 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
                       console.log("Plans clicked");
                     }}
                   >
-                    <button>Plans</button>
+                    <button className="flex">
+                      <Image
+                        alt="rupee svg"
+                        src="/rupee.svg"
+                        width={20}
+                        height={20}
+                        className="pr-1"
+                      />
+                      Plans
+                    </button>
                   </div>
                 </div>
               </AccordionContent>

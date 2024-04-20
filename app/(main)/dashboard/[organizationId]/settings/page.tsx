@@ -3,7 +3,7 @@ import { OrganizationProfile } from "@clerk/nextjs";
 import { shadesOfPurple } from "@clerk/themes";
 const SettingsPage = () => {
   return (
-    <div className="pl-6 flex items-center justify-center">
+    <div className="pl-6 pt-10 flex items-center justify-center">
       <OrganizationProfile
         appearance={{
           baseTheme: shadesOfPurple,
