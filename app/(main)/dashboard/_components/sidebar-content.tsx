@@ -26,13 +26,13 @@ export default function YourComponent() {
   console.log(pathname);
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Workspaces</h1>
+      <h1 className="text-2xl font-semibold text-white">Workspaces</h1>
       {userMemberships?.data?.map((membership) => (
         <div key={membership.id} className=" flex flex-row  justify-center">
           <Accordion type="single" collapsible className="pt-4">
             <AccordionItem value={membership.id}>
               <AccordionTrigger>
-                <div className="flex items-center ">
+                <div className="flex items-center text-white">
                   <div className="rounded-full overflow-hidden mr-4 ">
                     <Image
                       alt="organization logo"
@@ -53,10 +53,10 @@ export default function YourComponent() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="pl-10 ">
+                <div className="pl-10 text-white ">
                   <div
                     className={cn(
-                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
+                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2 m-1",
                       pathname ===
                         `/dashboard/${membership.organization.id}/boards`
                         ? "bg-blue-600 rounded-l-lg text-white"
@@ -80,7 +80,7 @@ export default function YourComponent() {
                     </button>
                   </div>
                   <div
-                    className="p-2 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
+                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
                       console.log("Notifications clicked");
                     }}
@@ -98,7 +98,7 @@ export default function YourComponent() {
                   </div>
                   <div
                     className={cn(
-                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
+                      "p-2 m-1 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
                       pathname ===
                         `/dashboard/${membership.organization.id}/settings`
                         ? "bg-blue-600 rounded-l-lg text-white"
@@ -125,7 +125,7 @@ export default function YourComponent() {
                   </div>
 
                   <div
-                    className="p-2 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
+                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
                       console.log("Plans clicked");
                     }}
