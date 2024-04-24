@@ -23,7 +23,6 @@ export default function YourComponent() {
   if (!userMemberships) {
     return null;
   }
-  console.log(pathname);
   return (
     <div>
       <h1 className="text-2xl font-semibold text-white">Workspaces</h1>

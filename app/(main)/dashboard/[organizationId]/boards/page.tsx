@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useOrganization } from "@clerk/clerk-react";
 import { useEffect } from "react";
+import { BoardModal } from "@/components/ui/modals/boards-modal";
 export default function Page() {
   const { organization } = useOrganization();
   const organizationId = organization?.id;
@@ -16,8 +17,7 @@ export default function Page() {
   return (
     <div>
       we will work here too...
-      {/* <Sidebar /> */}
-      {/* we will work on it */}
+      <BoardModal />
     </div>
   );
 }
