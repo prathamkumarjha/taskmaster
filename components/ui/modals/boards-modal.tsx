@@ -1,19 +1,13 @@
-"use client";
-
 import { Modal } from "@/components/ui/modal";
 import { useBoardModal } from "@/hooks/use-board-modal";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import axios from "axios";
-
+import { SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -21,61 +15,65 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import BackgroundImages from "./ui/background-images";
 
 const formSchema = z.object({
   name: z.string().min(1, {
-    message: "name of the store is required",
+    message: "Name of the board is required",
   }),
+  imageUrl: z.string(), // Add imageUrl to form schema
 });
+
+type FormData = {
+  name: string;
+  imageUrl: string;
+};
 
 export const BoardModal = () => {
   const storeModal = useBoardModal();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      imageUrl: "",
     },
   });
   const [disabled, setDisabled] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setDisabled(true);
-      const response = await axios.post("/api/stores", values);
-      toast.success("store created");
-    } catch (error) {
-      console.log("error in submission", error);
-      toast.error("Board creation failed");
-    } finally {
-      setDisabled(false);
+  const handleImageSelect = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    form.setValue("imageUrl", imageUrl);
+  };
 
-      window.location.reload();
-    }
+  const onSubmit: SubmitHandler<FormData> = (formData) => {
+    console.log("Form Data:", formData);
   };
 
   return (
     <Modal
-      title="Board Name"
-      description="Give a name to your board"
+      title="Board"
+      description="Create a new board"
       onClose={storeModal.onClose}
       isOpen={storeModal.isOpen}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Store Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Boards" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormItem>
+            <FormLabel>Board Name</FormLabel>
+            <FormControl>
+              <Input placeholder="Board Name" {...form.register("name")} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          <input type="hidden" {...form.register("imageUrl")} />
+          <FormItem>
+            <FormLabel>Image URL</FormLabel>
+            <FormControl>
+              <BackgroundImages onImageSelect={handleImageSelect} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
           <div className="flex justify-end space-x-4">
             <Button
               className="mt-1"
