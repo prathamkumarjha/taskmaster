@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -67,7 +68,7 @@ export const BackgroundImages: React.FC<BackgroundImagesProps> = ({
             width={180}
             height={90}
             className={cn(
-              "group relative aspect-video cursor-pointer bg-muted transition hover:opacity-50",
+              "group relative cursor-pointer bg-muted transition hover:opacity-50",
               selected === val.urls.regular ? "opacity-50" : ""
             )}
           />

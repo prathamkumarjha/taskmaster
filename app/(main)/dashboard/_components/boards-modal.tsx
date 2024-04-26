@@ -1,3 +1,4 @@
+"use client";
 import { Modal } from "@/components/ui/modal";
 import { useBoardModal } from "@/hooks/use-board-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,10 +17,11 @@ import { useOrganization } from "@clerk/clerk-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { BackgroundImages } from "./ui/background-images";
-import { BoardPreview } from "./ui/backgroundImagePreview";
+import { BackgroundImages } from "./background-images";
+import { BoardPreview } from "./backgroundImagePreview";
 import axios from "axios";
 import { useBackgroundImageStore } from "@/hooks/use-BackgroundImage-store";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -35,7 +37,7 @@ type FormData = {
 
 export const BoardModal = () => {
   const storeModal = useBoardModal();
-
+  const router = useRouter();
   const { organization } = useOrganization();
 
   const organizationId = organization?.id;
@@ -55,6 +57,7 @@ export const BoardModal = () => {
 
   useEffect(() => {
     form.setValue("imageUrl", selectedBackground);
+    selectedBackground == "" ? setDisabled(true) : setDisabled(false);
   }, [form, selectedBackground]);
 
   const handleImageSelect = (imageUrl: string) => {
@@ -71,6 +74,9 @@ export const BoardModal = () => {
       console.log("an error occured while creating the new board", error);
     } finally {
       setDisabled(false);
+      toast.success("board created");
+      router.refresh();
+      storeModal.onClose();
     }
   };
 

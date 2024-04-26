@@ -1,4 +1,3 @@
-"use client";
 import Sidebar from "@/app/(main)/dashboard/_components/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

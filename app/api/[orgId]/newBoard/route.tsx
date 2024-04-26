@@ -14,11 +14,18 @@ export async function POST(
 
     //we have to write the code for security of backend here
 
-    // sending data to backend id everything is ok!
     if (!userId) {
       return new NextResponse("unauthenticated", { status: 401 });
     }
 
+    if (!name) {
+      return new NextResponse("name is required", { status: 400 });
+    }
+
+    if (!imageUrl) {
+      return new NextResponse("imageUrl is reqired", { status: 400 });
+    }
+    // sending data to backend id everything is ok!
     const board = await prismadb.board.create({
       data: {
         organizationId: params.orgId,
@@ -30,6 +37,31 @@ export async function POST(
     return NextResponse.json(board);
   } catch (error) {
     console.log("newBoard_POST", error);
+
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
+
+export async function GET(
+  req: Request,
+  { params }: { params: { orgId: string } }
+) {
+  try {
+    const { userId } = auth();
+
+    //we have to write the code for security of backend here
+
+    if (!userId) {
+      return new NextResponse("unauthenticated", { status: 401 });
+    }
+
+    // sending data to backend id everything is ok!
+
+    // console.log(board);
+
+    // return NextResponse.json(board);
+  } catch (error) {
+    console.log("newBoard_GET", error);
 
     return new NextResponse("Internal error", { status: 500 });
   }
