@@ -1,6 +1,9 @@
 import useSWR from "swr";
 import Image from "next/image";
-
+import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { FaCheck } from "react-icons/fa6";
+import { useBackgroundImageStore } from "@/hooks/use-BackgroundImage-store";
 type OnImageSelectFn = (imageUrl: string) => void;
 
 const fetcher = async (url: string) => {
@@ -11,19 +14,40 @@ const fetcher = async (url: string) => {
   return response.json();
 };
 
-const BackgroundImages = ({
+interface BackgroundImagesProps {
+  onImageSelect: OnImageSelectFn;
+}
+
+export const BackgroundImages: React.FC<BackgroundImagesProps> = ({
   onImageSelect,
 }: {
   onImageSelect: OnImageSelectFn;
 }) => {
-  const { data, error } = useSWR<any[]>(
-    "https://api.unsplash.com/photos/random?count=9&orientation=landscape&client_id=OEc6i_e-g0rh4pG8YJSTS_MOf4HqEK7wnvkj_1DQN9Y",
-    fetcher,
-    { revalidateOnFocus: false }
-  );
+  const [selected, setSelected] = useState("");
+  const { selectedBackground, setSelectedBackground } =
+    useBackgroundImageStore();
+
+  const { data, error } = useSWR<any[]>("/api/unsplash", fetcher, {
+    revalidateOnFocus: false,
+  });
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setSelected(data[0].urls.regular);
+
+      setSelectedBackground(data[0].urls.regular);
+    }
+  }, [data, setSelectedBackground]);
 
   const handleImageSelect = (imageUrl: string) => {
-    onImageSelect(imageUrl);
+    if (imageUrl === "") {
+      onImageSelect(selected);
+      setSelectedBackground(imageUrl);
+    } else {
+      onImageSelect(imageUrl);
+      setSelectedBackground(imageUrl);
+    }
+    setSelected(imageUrl);
   };
 
   if (error) return <div className="text-red-500">Error: {error.message}</div>;
@@ -34,7 +58,7 @@ const BackgroundImages = ({
       {data.map((val) => (
         <div
           key={val.id}
-          className="overflow-hidden"
+          className="relative overflow-hidden"
           onClick={() => handleImageSelect(val.urls.regular)}
         >
           <Image
@@ -42,12 +66,18 @@ const BackgroundImages = ({
             alt="image"
             width={180}
             height={90}
-            className="group relative aspect-video cursor-pointer bg-muted transition hover:opacity-75"
+            className={cn(
+              "group relative aspect-video cursor-pointer bg-muted transition hover:opacity-50",
+              selected === val.urls.regular ? "opacity-50" : ""
+            )}
           />
+          {selected === val.urls.regular && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <FaCheck className="text-gray-900 text-xl" />
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
 };
-
-export default BackgroundImages;
