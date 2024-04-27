@@ -15,8 +15,9 @@ datasource db {
 }
 
 model board {
-  id             String @id @default(uuid())
+  id             String  @id @default(uuid())
   organizationId String
   name           String
   imageUrl       String
+  favorite       Boolean @default(false)
 }

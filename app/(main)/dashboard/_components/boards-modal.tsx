@@ -16,7 +16,7 @@ import {
 import { useOrganization } from "@clerk/clerk-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { BackgroundImages } from "./background-images";
 import { BoardPreview } from "./backgroundImagePreview";
 import axios from "axios";
@@ -52,7 +52,7 @@ export const BoardModal = () => {
       imageUrl: "",
     },
   });
-
+  const { toast } = useToast();
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
@@ -72,11 +72,16 @@ export const BoardModal = () => {
       axios.post(`/api/${organizationId}/newBoard`, formData);
     } catch (error) {
       console.log("an error occured while creating the new board", error);
+      toast({
+        variant: "destructive",
+        description: "There was a problem with creating your board.",
+      });
     } finally {
       setDisabled(false);
-      toast.success("board created");
-      router.refresh();
-      storeModal.onClose();
+      toast({
+        description: "new board created",
+      });
+      router.refresh;
     }
   };
 

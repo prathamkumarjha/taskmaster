@@ -41,28 +41,3 @@ export async function POST(
     return new NextResponse("Internal error", { status: 500 });
   }
 }
-
-export async function GET(
-  req: Request,
-  { params }: { params: { orgId: string } }
-) {
-  try {
-    const { userId } = auth();
-
-    //we have to write the code for security of backend here
-
-    if (!userId) {
-      return new NextResponse("unauthenticated", { status: 401 });
-    }
-
-    // sending data to backend id everything is ok!
-
-    // console.log(board);
-
-    // return NextResponse.json(board);
-  } catch (error) {
-    console.log("newBoard_GET", error);
-
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
