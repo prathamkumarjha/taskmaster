@@ -27,12 +27,12 @@ export default function YourComponent() {
     <div>
       <h1 className="text-2xl font-semibold text-white">Workspaces</h1>
       {userMemberships?.data?.map((membership) => (
-        <div key={membership.id} className=" flex flex-row  justify-center">
+        <div key={membership.id} className=" flex flex-row  ">
           <Accordion type="single" collapsible className="pt-4">
             <AccordionItem value={membership.id}>
               <AccordionTrigger>
                 <div className="flex items-center text-white">
-                  <div className="rounded-full overflow-hidden mr-4 ">
+                  <div className="  rounded-full overflow-hidden mr-4 ">
                     <Image
                       alt="organization logo"
                       src={membership.organization.imageUrl}

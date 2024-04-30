@@ -27,12 +27,16 @@ export default function Nav() {
 
   return (
     <nav>
-      <div className="mx-auto bg-custom-blue sticky top-0 z-10">
+      <div className="mx-auto bg-custom-blue sticky top-0 z-10 text-black ">
         <div className="flex justify-between h-16 px-4">
           <div className="md:hidden flex">
             <Mobile />
-            <div className="mt-4 mr-0 ">
-              <Button variant="outline" onClick={boardModal.onOpen}>
+            <div className="mt-4 mr-0 text-black">
+              <Button
+                variant="outline"
+                onClick={boardModal.onOpen}
+                className="text-black"
+              >
                 Create
               </Button>
             </div>

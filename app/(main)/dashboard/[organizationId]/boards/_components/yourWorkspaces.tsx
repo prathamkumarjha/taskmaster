@@ -27,7 +27,7 @@ const YourWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
         {workspaces.map((workspace) => (
           <div key={workspace.id} className="relative">
             <div className="group h-48 w-72 space-2">
-              <Link href={workspace.imageUrl}>
+              <Link href={`/board/${workspace.id}`}>
                 <Image
                   src={workspace.imageUrl}
                   alt={workspace.name}

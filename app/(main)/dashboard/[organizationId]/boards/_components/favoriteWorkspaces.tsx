@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdStarRate } from "react-icons/md";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 interface WorkspaceProps {
   id: string;
   organizationId: string;
@@ -16,8 +16,6 @@ interface WorkspaceProps {
 const FavoriteWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
   workspaces,
 }) => {
-  const router = useRouter();
-
   if (Object.keys(workspaces).length === 0) {
     return <></>;
   }
@@ -29,7 +27,7 @@ const FavoriteWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
         {workspaces.map((workspace) => (
           <div key={workspace.id} className="relative">
             <div className="group h-48 w-72 space-2">
-              <Link href={workspace.imageUrl}>
+              <Link href={`/board/${workspace.id}`}>
                 <Image
                   src={workspace.imageUrl}
                   alt={workspace.name}
@@ -56,7 +54,7 @@ const FavoriteWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
                     } catch (error) {
                       console.log(error);
                     } finally {
-                      router.refresh();
+                      redirect(`/board/${workspace.id}`);
                     }
                   }}
                   className="absolute bottom-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4"

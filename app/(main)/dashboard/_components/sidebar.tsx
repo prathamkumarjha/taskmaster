@@ -4,8 +4,8 @@ import YourComponent from "./sidebar-content";
 
 const Sidebar = () => {
   return (
-    <div className="w-56 bg-custom-blue h-screen border-inherit hidden justify-center ml-6 mt-8 sm:flex">
-      <div className="py-4 px-8 text-white">
+    <div className="w-56 bg-custom-blue h-screen border-inherit hidden  justify-center sm:flex">
+      <div className="py-4  text-white">
         <YourComponent />
       </div>
     </div>

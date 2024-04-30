@@ -1,15 +1,21 @@
 import Sidebar from "@/app/(main)/dashboard/_components/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Nav from "../_components/navbar";
 
 export default function Page({ children }: { children: React.ReactNode }) {
   return (
-    <div className=" text-stone-300 flex">
-      <div className="hidden w-64 shrink-0 md:block overflow-y-hidden">
-        <ScrollArea>
-          <Sidebar />
-        </ScrollArea>
+    <div>
+      <Nav />
+      <div className="flex text-stone-300">
+        <div className="hidden md:block w-64 overflow-y-auto">
+          <ScrollArea>
+            <Sidebar />
+          </ScrollArea>
+        </div>
+        <div className="flex flex-col w-full">
+          <div className="flex-grow">{children}</div>
+        </div>
       </div>
-      <div className="flex">{children}</div>
     </div>
   );
 }

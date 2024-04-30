@@ -20,4 +20,27 @@ model board {
   name           String
   imageUrl       String
   favorite       Boolean @default(false)
+  lists          list[]
+}
+
+model list {
+  id      String @id @default(uuid())
+  boardId String
+  board   board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  name    String
+  order   Int
+  cards   card[]
+
+  @@index([boardId])
+}
+
+model card {
+  id          String  @id @default(uuid())
+  columnId    String
+  column      list    @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  order       Int
+
+  @@index([columnId])
 }

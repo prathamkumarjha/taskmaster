@@ -35,7 +35,6 @@ export const BackgroundImages: React.FC<BackgroundImagesProps> = ({
   useEffect(() => {
     if (data && data.length > 0) {
       setSelected(data[0].urls.regular);
-
       setSelectedBackground(data[0].urls.regular);
     }
   }, [data, setSelectedBackground]);

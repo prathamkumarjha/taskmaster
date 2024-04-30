@@ -7,7 +7,7 @@ export default function Mobile() {
     <Sheet>
       <SheetTrigger>
         <Button asChild className="mt-4 bg-transparent">
-          <div className="text-white text-xl">
+          <div className="text-white text-xl ">
             <GiHamburgerMenu className="w-full h-full" />
           </div>
         </Button>
