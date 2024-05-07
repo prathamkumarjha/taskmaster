@@ -5,11 +5,13 @@ import {
   DndContext,
   DragStartEvent,
   DragEndEvent,
-  UniqueIdentifier,
   DragOverlay,
 } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import Column from "./columns";
+import axios from "axios";
+import { useParams, useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 interface BoardInterface {
   id: string;
@@ -39,20 +41,57 @@ const Board: React.FC<{
   BoardData: BoardInterface;
   ColumnData: ColumnInterface[];
 }> = ({ BoardData, ColumnData }) => {
-  const [items] = useState([...ColumnData]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-
+  const { toast } = useToast();
+  const [items, setItems] = useState([...ColumnData]);
+  const params = useParams<{ boardId: string }>();
+  const [activeColumn, setActiveColumn] = useState<ColumnInterface | null>(
+    null
+  );
+  const router = useRouter();
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id.toString());
+    setActiveColumn(
+      ColumnData.find((col) => col.id === event.active.id.toString()) || null
+    );
   };
 
-  const handleDragEnd = () => {
-    setActiveId(null);
-  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) {
+      return;
+    }
+    const activeColumnId = active.id;
+    const overColumnId = over.id;
 
-  useEffect(() => {
-    console.log("Current active id:", activeId);
-  }, [activeId]);
+    if (overColumnId === activeColumnId) return;
+
+    setItems((columns) => {
+      const activeIndex = columns.findIndex((col) => col.id === activeColumnId);
+      const overIndex = columns.findIndex((col) => col.id === overColumnId);
+      function swap() {
+        axios
+          .patch(`/api/boardChanges/${params.boardId}/columnSwap`, {
+            activeColumnId,
+            overColumnId,
+          })
+          .then(() => {
+            router.refresh;
+            toast({
+              title: "list sequence updated",
+            });
+          })
+          .catch((error) => {
+            console.error("Error in swapping list:", error);
+            toast({
+              variant: "destructive",
+              title: "unable to update list sequence",
+            });
+            router.refresh();
+          });
+      }
+      swap();
+      return arrayMove(items, activeIndex, overIndex);
+    });
+  };
 
   return (
     <div
@@ -66,15 +105,19 @@ const Board: React.FC<{
       <div className="flex">
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <SortableContext items={items}>
-            {ColumnData.map((col) => (
-              <Column key={col.id} ColumnData={col} />
-            ))}
+            <div className="flex flex-row-reverse">
+              {items.map((col) => (
+                <Column key={col.id} ColumnData={col} />
+              ))}
+            </div>
           </SortableContext>
           <DragOverlay>
-            {activeId ? <Column ColumnData={ColumnData[0]} /> : null}
+            <div className="opacity-75 transform rotate-2">
+              {activeColumn && <Column ColumnData={activeColumn} />}
+            </div>
           </DragOverlay>
         </DndContext>
-        <div className="p-4 pr-8">
+        <div className="p-4">
           <NewListButton />
         </div>
       </div>

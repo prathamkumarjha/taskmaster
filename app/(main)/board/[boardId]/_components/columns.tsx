@@ -20,17 +20,36 @@ interface ColumnInterface {
 const Column: React.FC<{
   ColumnData: ColumnInterface;
 }> = ({ ColumnData }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: ColumnData.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: ColumnData.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
+  if (isDragging) {
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <div
+          className="p-4 m-2 w-[180px]  bg-white rounded-lg shadow-md h-full opacity-50"
+          onClick={() => console.log("click is working")}
+        ></div>
+      </div>
+    );
+  }
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div className="p-4 m-2 w-[180px] bg-white rounded-lg shadow-md">
+      <div
+        className="p-4 m-2 w-[180px] h-full bg-white rounded-lg shadow-md"
+        onClick={() => console.log("click is working")}
+      >
         {ColumnData.name}
       </div>
     </div>
