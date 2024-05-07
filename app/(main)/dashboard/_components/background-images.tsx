@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import useSWR from "swr";
 import Image from "next/image";
 import { cn } from "@/lib/utils";

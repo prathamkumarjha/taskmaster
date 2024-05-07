@@ -1,8 +1,10 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect, RefObject } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -11,8 +13,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { HiOutlineX } from "react-icons/hi";
 import { Input } from "@/components/ui/input";
-
+import { FaPlus } from "react-icons/fa6";
+import axios from "axios";
+import { Router } from "lucide-react";
+import { useRouter } from "next/navigation";
 const formSchema = z.object({
   listName: z.string().min(1).max(50),
 });
@@ -21,6 +27,7 @@ const NewListButton = () => {
   const [newList, setNewList] = useState(false);
   const refOne = useRef<HTMLDivElement | null>(null);
 
+  const params = useParams<{ boardId: string }>();
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, true);
     return () => {
@@ -34,6 +41,7 @@ const NewListButton = () => {
     }
   };
 
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,24 +49,36 @@ const NewListButton = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit() {
+    const values = form.getValues();
     console.log(values);
+    axios
+      .post(`/api/newList/${params.boardId}`, values)
+      .then(() => {
+        router.refresh();
+        setNewList(false);
+      })
+      .catch((error) => {
+        console.error("Error creating new list:", error);
+      });
   }
 
   if (!newList) {
     return (
       <Button
-        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-2 px-4 border-0 rounded"
-        onClick={() => setNewList(true)}
+        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex"
+        onClick={() => {
+          setNewList(true);
+        }}
       >
-        Add a list
+        <FaPlus className="mr-4" /> Add a list
       </Button>
     );
   }
 
   return (
     <div
-      className="bg-white p-4 w-60 rounded-lg shadow-md"
+      className="bg-white p-4 w-60 rounded-lg shadow-md "
       ref={refOne as RefObject<HTMLDivElement>}
     >
       <Form {...form}>
@@ -70,7 +90,7 @@ const NewListButton = () => {
               <FormItem>
                 <FormLabel>List Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter list here..." {...field} />
+                  <Input placeholder="Enter list title..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,7 +102,7 @@ const NewListButton = () => {
             className="ml-2  border-black "
             onClick={() => setNewList(false)}
           >
-            X
+            <HiOutlineX className="h-4 w-4" />
           </Button>
         </form>
       </Form>

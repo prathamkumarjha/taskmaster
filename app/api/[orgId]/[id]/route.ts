@@ -1,5 +1,4 @@
 import prismadb from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { PrismaClient } from '@prisma/client';
