@@ -10,29 +10,29 @@ export async function POST(
     const { userId } = auth();
     const body = await req.json();
 
-    const { listName } = body;
+    
+    const { values,order } = body;
 
+    console.log(body)
     //we have to write the code for security of backend here
 
     if (!userId) {
       return new NextResponse("unauthenticated", { status: 401 });
     }
 
-    if (!listName) {
-      return new NextResponse("name is required", { status: 400 });
-    }
+    // if (!listName) {
+    //   return new NextResponse("name is required", { status: 400 });
+    // }
 
-    // Get the size of the list table
-    const listSize = await prismadb.list.count();
 
     // Set the order value to be one more than the size of the list table
-    const order = listSize + 1;
+    
 
     // sending data to backend if everything is ok!
     const board = await prismadb.list.create({
       data: {
         boardId: params.BoardId,
-        name:listName,
+        name:values.listName,
         order,
       },
     });

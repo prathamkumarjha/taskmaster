@@ -6,6 +6,9 @@ import {
   DragStartEvent,
   DragEndEvent,
   DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import Column from "./columns";
@@ -42,12 +45,29 @@ const Board: React.FC<{
   ColumnData: ColumnInterface[];
 }> = ({ BoardData, ColumnData }) => {
   const { toast } = useToast();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 30,
+      },
+    })
+  );
+
   const [items, setItems] = useState([...ColumnData]);
+
   const params = useParams<{ boardId: string }>();
+
   const [activeColumn, setActiveColumn] = useState<ColumnInterface | null>(
     null
   );
+
   const router = useRouter();
+
+  useEffect(() => {
+    setItems([...ColumnData]);
+  }, [ColumnData]);
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveColumn(
       ColumnData.find((col) => col.id === event.active.id.toString()) || null
@@ -59,7 +79,9 @@ const Board: React.FC<{
     if (!over) {
       return;
     }
+
     const activeColumnId = active.id;
+
     const overColumnId = over.id;
 
     if (overColumnId === activeColumnId) return;
@@ -103,7 +125,11 @@ const Board: React.FC<{
       }}
     >
       <div className="flex">
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext items={items}>
             <div className="flex flex-row-reverse">
               {items.map((col) => (
@@ -118,7 +144,7 @@ const Board: React.FC<{
           </DragOverlay>
         </DndContext>
         <div className="p-4">
-          <NewListButton />
+          <NewListButton size={Number(ColumnData.length) + 1} />
         </div>
       </div>
     </div>

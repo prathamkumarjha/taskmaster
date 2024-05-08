@@ -17,16 +17,20 @@ import { HiOutlineX } from "react-icons/hi";
 import { Input } from "@/components/ui/input";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
-import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
   listName: z.string().min(1).max(50),
 });
 
-const NewListButton = () => {
+interface NewListButtonInterface {
+  size: Number;
+}
+
+const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
   const [newList, setNewList] = useState(false);
   const refOne = useRef<HTMLDivElement | null>(null);
 
+  console.log(size);
   const params = useParams<{ boardId: string }>();
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, true);
@@ -49,11 +53,12 @@ const NewListButton = () => {
     },
   });
 
+  const order = size;
+
   function onSubmit() {
     const values = form.getValues();
-    console.log(values);
     axios
-      .post(`/api/newList/${params.boardId}`, values)
+      .post(`/api/newList/${params.boardId}`, { values, order })
       .then(() => {
         router.refresh();
         setNewList(false);

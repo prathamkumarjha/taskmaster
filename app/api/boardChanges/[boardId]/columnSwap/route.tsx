@@ -9,7 +9,7 @@ export async function PATCH(
   try {
     const { userId } = auth();
     const body = await req.json();
-    console.log(body);
+    // console.log(body);
     const { activeColumnId, overColumnId } = body;
     // if (!userId) {
     //   return new NextResponse("unauthenticated", { status: 400 });

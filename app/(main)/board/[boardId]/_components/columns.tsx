@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import ColumnName from "./columnName";
 interface CardInterface {
   id: string;
   columnId: string;
@@ -38,7 +39,7 @@ const Column: React.FC<{
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         <div
-          className="p-4 m-2 w-[180px]  bg-white rounded-lg shadow-md h-full opacity-50"
+          className="p-4 m-2 w-[180px]  bg-white rounded-lg shadow-md h-40 opacity-50"
           onClick={() => console.log("click is working")}
         ></div>
       </div>
@@ -46,11 +47,8 @@ const Column: React.FC<{
   }
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div
-        className="p-4 m-2 w-[180px] h-full bg-white rounded-lg shadow-md"
-        onClick={() => console.log("click is working")}
-      >
-        {ColumnData.name}
+      <div className="p-4 m-2 w-[180px] h-30 bg-white rounded-lg shadow-md">
+        <ColumnName listName={ColumnData.name} id={ColumnData.id} />
       </div>
     </div>
   );
