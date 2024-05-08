@@ -19,14 +19,23 @@ import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
-  listName: z.string().min(1).max(50),
+  name: z
+    .string()
+    .min(1, { message: "name cannot be empty" })
+    .max(100, { message: "name is too long" }),
+  order: z.number(),
+  columnId: z.string().min(1),
 });
 
 interface NewListButtonInterface {
-  size: Number;
+  size: number;
+  columnId: string;
 }
 
-const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
+const NewCardButton: React.FC<NewListButtonInterface> = ({
+  size,
+  columnId,
+}) => {
   const [newList, setNewList] = useState(false);
   const refOne = useRef<HTMLDivElement | null>(null);
 
@@ -48,16 +57,18 @@ const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      listName: "",
+      name: "",
+      order: size + 1,
+      columnId: columnId,
     },
   });
 
-  const order = size;
-
   function onSubmit() {
     const values = form.getValues();
+    // console.log(values);
+
     axios
-      .post(`/api/newList/${params.boardId}`, { values, order })
+      .post(`/api/newCard/${params.boardId}`, { ...values })
       .then(() => {
         router.refresh();
         setNewList(false);
@@ -70,29 +81,26 @@ const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
   if (!newList) {
     return (
       <Button
-        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex"
+        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex text-black variant-ghost bg-gray-300 hover:bg-gray-500"
         onClick={() => {
           setNewList(true);
         }}
       >
-        <FaPlus className="mr-4" /> Add a list
+        <FaPlus className="mr-1 text-black " /> Add a Card
       </Button>
     );
   }
 
   return (
-    <div
-      className="bg-white p-4 w-60 rounded-lg shadow-md "
-      ref={refOne as RefObject<HTMLDivElement>}
-    >
+    <div className="mt-4" ref={refOne as RefObject<HTMLDivElement>}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <FormField
             control={form.control}
-            name="listName"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>List Name</FormLabel>
+                <FormLabel>Card Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter list title..." {...field} />
                 </FormControl>
@@ -100,18 +108,20 @@ const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
-          <Button
-            variant="ghost"
-            className="ml-2  border-black "
-            onClick={() => setNewList(false)}
-          >
-            <HiOutlineX className="h-4 w-4" />
-          </Button>
+          <div className="flex justify-center">
+            <Button type="submit">Add a card</Button>
+            <Button
+              variant="ghost"
+              className="ml-2  border-black "
+              onClick={() => setNewList(false)}
+            >
+              <HiOutlineX className="h-4 w-4" />
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
   );
 };
 
-export default NewListButton;
+export default NewCardButton;

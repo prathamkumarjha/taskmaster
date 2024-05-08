@@ -19,6 +19,7 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
   const [newName, setNewName] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const oldName = listName;
   const router = useRouter();
   useEffect(() => {
     const handleClickOutside = (e: Event) => {
@@ -43,7 +44,10 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
   const params = useParams();
   const handleSaveName = () => {
     console.log("New name:", name);
-    if (name.length >= 1) {
+    if (oldName === name) {
+      setNewName(false);
+      return;
+    } else if (name.length >= 1) {
       axios
         .patch(`/api/boardChanges/${params.boardId}/columnUpdate`, { name, id })
         .then(() =>

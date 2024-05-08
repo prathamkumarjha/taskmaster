@@ -6,6 +6,7 @@ import {
   DragStartEvent,
   DragEndEvent,
   DragOverlay,
+  TouchSensor,
   useSensor,
   useSensors,
   PointerSensor,
@@ -49,9 +50,10 @@ const Board: React.FC<{
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 30,
+        distance: 3,
       },
-    })
+    }),
+    useSensor(TouchSensor)
   );
 
   const [items, setItems] = useState([...ColumnData]);
