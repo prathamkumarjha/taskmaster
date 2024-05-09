@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import NewListButton from "./newListButton";
 import {
   DndContext,
@@ -16,6 +16,7 @@ import Column from "./columns";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import Card from "./card";
 
 interface BoardInterface {
   id: string;
@@ -64,6 +65,8 @@ const Board: React.FC<{
     null
   );
 
+  const [activeCard, setActiveCard] = useState<CardInterface | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -71,11 +74,20 @@ const Board: React.FC<{
   }, [ColumnData]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveColumn(
-      ColumnData.find((col) => col.id === event.active.id.toString()) || null
-    );
+    if (event.active.data.current?.type === "column") {
+      setActiveColumn(
+        ColumnData.find((col) => col.id === event.active.id.toString()) || null
+      );
+    }
+    if (event.active.data.current?.type === "card") {
+      setActiveCard(event.active.data.current as CardInterface);
+      console.log(event.active.data.current);
+    }
   };
 
+  useEffect(() => {
+    console.log(activeCard);
+  }, [activeCard]);
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) {
@@ -143,6 +155,7 @@ const Board: React.FC<{
             <div className="opacity-75 transform rotate-2">
               {activeColumn && <Column ColumnData={activeColumn} />}
             </div>
+            {activeCard && <Card {...activeCard} />}
           </DragOverlay>
         </DndContext>
         <div className="p-4">
