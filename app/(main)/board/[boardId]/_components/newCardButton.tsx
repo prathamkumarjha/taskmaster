@@ -23,19 +23,14 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "name cannot be empty" })
     .max(100, { message: "name is too long" }),
-  order: z.number(),
   columnId: z.string().min(1),
 });
 
 interface NewListButtonInterface {
-  size: number;
   columnId: string;
 }
 
-const NewCardButton: React.FC<NewListButtonInterface> = ({
-  size,
-  columnId,
-}) => {
+const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   const [newList, setNewList] = useState(false);
   const refOne = useRef<HTMLDivElement | null>(null);
 
@@ -58,14 +53,13 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      order: size + 1,
       columnId: columnId,
     },
   });
 
   function onSubmit() {
     const values = form.getValues();
-    // console.log(values);
+    console.log(values);
 
     axios
       .post(`/api/newCard/${params.boardId}`, { ...values })

@@ -20,6 +20,7 @@ const BoardPreviewContent: React.FC<BoardPreviewProps> = ({
       {selectedBackground && (
         <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
           <Image
+            draggable="false"
             src={selectedBackground}
             alt="Selected Background"
             width={100} // Increase the width
@@ -32,6 +33,7 @@ const BoardPreviewContent: React.FC<BoardPreviewProps> = ({
       {/* Render the cards SVG */}
       <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
         <Image
+          draggable="false"
           src="/cards.svg"
           alt="preview"
           width={80} // Increase the width

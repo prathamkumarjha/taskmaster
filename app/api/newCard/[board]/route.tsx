@@ -10,8 +10,8 @@ export async function POST(
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, order, columnId } = body;
-
+    const { name, columnId } = body;
+    console.log(body);
     // console.log(body);
     //we have to write the code for security of backend here
 
@@ -25,11 +25,16 @@ export async function POST(
 
     // Set the order value to be one more than the size of the list table
 
+    const cardOrder = await prismadb.card.findMany({
+      where: {
+        columnId,
+      },
+    });
     // sending data to backend if everything is ok!
     const board = await prismadb.card.create({
       data: {
         name: name,
-        order: order,
+        order: cardOrder.length + 1,
         columnId: columnId,
       },
     });

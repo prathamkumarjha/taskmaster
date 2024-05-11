@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  DragOverEvent,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import Column from "./columns";
@@ -67,6 +68,12 @@ const Board: React.FC<{
 
   const [activeCard, setActiveCard] = useState<CardInterface | null>(null);
 
+  const defaultCards: CardInterface[] = ColumnData.flatMap(
+    (column) => column.cards
+  );
+
+  const [cards, setCards] = useState<CardInterface[]>(defaultCards);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -74,26 +81,52 @@ const Board: React.FC<{
   }, [ColumnData]);
 
   const handleDragStart = (event: DragStartEvent) => {
+    if (event.active.data.current?.type === "card") {
+      setActiveColumn(null);
+      setActiveCard(event.active.data.current as CardInterface);
+    }
     if (event.active.data.current?.type === "column") {
+      setActiveCard(null);
       setActiveColumn(
         ColumnData.find((col) => col.id === event.active.id.toString()) || null
       );
-    }
-    if (event.active.data.current?.type === "card") {
-      setActiveCard(event.active.data.current as CardInterface);
-      console.log(event.active.data.current);
     }
   };
 
   useEffect(() => {
     console.log(activeCard);
   }, [activeCard]);
+
+  const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (activeId === overId) return;
+
+    const isActiveCard = active.data.current?.type === "card";
+    const isOverCard = active.data.current?.type === "card";
+
+    //dropping the card on another card
+
+    if (isActiveCard && isOverCard) {
+      setCards((card) => {
+        const activeIndex = card.findIndex((t) => t.id === activeId);
+        const overIndex = card.findIndex((t) => t.id === overId);
+        return arrayMove(card, activeIndex, overIndex);
+      });
+    }
+    //dropping a card over a column
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) {
       return;
     }
-
+    setActiveCard(null);
     const activeColumnId = active.id;
 
     const overColumnId = over.id;
@@ -121,7 +154,7 @@ const Board: React.FC<{
               variant: "destructive",
               title: "unable to update list sequence",
             });
-            router.refresh();
+            // router.refresh();
           });
       }
       swap();
@@ -131,7 +164,8 @@ const Board: React.FC<{
 
   return (
     <div
-      className="relative h-screen bg-cover bg-center bg-no-repeat overflow-auto overflow-y-hidden p-4"
+      className="relative h-screen bg-cover bg-center bg-no-repeat overflow-y-hidden p-4"
+      draggable="false"
       style={{
         backgroundImage: `url(${BoardData.imageUrl})`,
         backgroundSize: "cover",
@@ -143,9 +177,10 @@ const Board: React.FC<{
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
+          onDragOver={onDragOver}
         >
           <SortableContext items={items}>
-            <div className="flex flex-row-reverse">
+            <div className="flex flex-row-reverse h-">
               {items.map((col) => (
                 <Column key={col.id} ColumnData={col} />
               ))}

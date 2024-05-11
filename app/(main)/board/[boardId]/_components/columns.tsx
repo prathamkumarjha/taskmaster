@@ -3,12 +3,8 @@ import { CSS } from "@dnd-kit/utilities";
 import ColumnName from "./columnName";
 import NewCardButton from "./newCardButton";
 import Card from "./card";
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
+import { useState } from "react";
 
 interface CardInterface {
   id: string;
@@ -29,12 +25,6 @@ interface ColumnInterface {
 const Column: React.FC<{
   ColumnData: ColumnInterface;
 }> = ({ ColumnData }) => {
-  // const [items, setItems] = useState([...ColumnData.cards]);
-
-  const cardIds = useMemo(() => {
-    return ColumnData.cards.map((card) => card.id);
-  }, [ColumnData]);
-
   const {
     attributes,
     listeners,
@@ -49,6 +39,8 @@ const Column: React.FC<{
     },
   });
 
+  const [cards, setCards] = useState([...ColumnData.cards]);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -61,24 +53,24 @@ const Column: React.FC<{
       </div>
     );
   }
+
   return (
     <div ref={setNodeRef} style={style}>
-      <div className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg">
-        <SortableContext items={cardIds}>
-          <div {...attributes} {...listeners}>
-            <ColumnName listName={ColumnData.name} id={ColumnData.id} />
+      <div className="h-[90vh]">
+        <div className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+          <SortableContext items={cards}>
+            <div {...attributes} {...listeners}>
+              <ColumnName listName={ColumnData.name} id={ColumnData.id} />
+            </div>
+            <div className="space-y-2 mt-4 ">
+              {ColumnData.cards.map((card) => (
+                <Card key={card.id} {...card} />
+              ))}
+            </div>
+          </SortableContext>
+          <div className="mt-4">
+            <NewCardButton columnId={ColumnData.id} />
           </div>
-          <div className="space-y-2 mt-4 ">
-            {ColumnData.cards.map((card) => (
-              <Card key={card.id} {...card} />
-            ))}
-          </div>
-        </SortableContext>
-        <div className="mt-4">
-          <NewCardButton
-            size={ColumnData.cards.length}
-            columnId={ColumnData.id}
-          />
         </div>
       </div>
     </div>

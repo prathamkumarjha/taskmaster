@@ -29,6 +29,7 @@ const FavoriteWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
             <div className="group h-48 w-72 space-2">
               <Link href={`/board/${workspace.id}`}>
                 <Image
+                  draggable="false"
                   src={workspace.imageUrl}
                   alt={workspace.name}
                   fill

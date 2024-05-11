@@ -15,7 +15,11 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
       boardId: id,
     },
     include: {
-      cards: true,
+      cards: {
+        orderBy: {
+          order: "asc",
+        },
+      },
     },
     orderBy: {
       order: "desc",

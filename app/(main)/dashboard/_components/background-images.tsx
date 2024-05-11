@@ -62,6 +62,7 @@ export const BackgroundImages: React.FC<BackgroundImagesProps> = ({
           onClick={() => handleImageSelect(val.urls.regular)}
         >
           <Image
+            draggable="false"
             src={val.urls.regular}
             alt="image"
             width={180}
