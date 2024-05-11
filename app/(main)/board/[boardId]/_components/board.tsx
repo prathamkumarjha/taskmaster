@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import NewListButton from "./newListButton";
 import {
   DndContext,
@@ -93,10 +93,6 @@ const Board: React.FC<{
     }
   };
 
-  useEffect(() => {
-    console.log(activeCard);
-  }, [activeCard]);
-
   const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -104,18 +100,36 @@ const Board: React.FC<{
     const activeId = active.id;
     const overId = over.id;
 
+    console.log(active);
+    // console.log("columnData", ColumnData);
+    const activeColumnId = ColumnData.findIndex(
+      (t) => t.id === active.data.current?.columnId
+    );
+    console.log("activeColumnID", activeColumnId);
     if (activeId === overId) return;
-
+    console.log("Active:", activeId, "OverId", overId);
     const isActiveCard = active.data.current?.type === "card";
     const isOverCard = active.data.current?.type === "card";
 
     //dropping the card on another card
 
     if (isActiveCard && isOverCard) {
-      setCards((card) => {
-        const activeIndex = card.findIndex((t) => t.id === activeId);
-        const overIndex = card.findIndex((t) => t.id === overId);
-        return arrayMove(card, activeIndex, overIndex);
+      setItems((columns) => {
+        const activeIndex = columns[activeColumnId].cards.findIndex(
+          (t) => t.id === activeId
+        );
+        const overIndex = columns[activeColumnId].cards.findIndex(
+          (t) => t.id === overId
+        );
+
+        const newArr = arrayMove(
+          columns[activeColumnId].cards,
+          activeIndex,
+          overIndex
+        );
+        console.log(newArr);
+        ColumnData[activeColumnId].cards = newArr;
+        return ColumnData;
       });
     }
     //dropping a card over a column
@@ -126,7 +140,7 @@ const Board: React.FC<{
     if (!over) {
       return;
     }
-    setActiveCard(null);
+    // setActiveCard(null);
     const activeColumnId = active.id;
 
     const overColumnId = over.id;
@@ -154,7 +168,7 @@ const Board: React.FC<{
               variant: "destructive",
               title: "unable to update list sequence",
             });
-            // router.refresh();
+            router.refresh();
           });
       }
       swap();

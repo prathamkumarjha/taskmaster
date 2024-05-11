@@ -4,7 +4,6 @@ import ColumnName from "./columnName";
 import NewCardButton from "./newCardButton";
 import Card from "./card";
 import { SortableContext } from "@dnd-kit/sortable";
-import { useState } from "react";
 
 interface CardInterface {
   id: string;
@@ -39,8 +38,6 @@ const Column: React.FC<{
     },
   });
 
-  const [cards, setCards] = useState([...ColumnData.cards]);
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -58,7 +55,7 @@ const Column: React.FC<{
     <div ref={setNodeRef} style={style}>
       <div className="h-[90vh]">
         <div className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
-          <SortableContext items={cards}>
+          <SortableContext items={ColumnData.cards}>
             <div {...attributes} {...listeners}>
               <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             </div>
