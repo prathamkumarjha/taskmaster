@@ -113,47 +113,41 @@ const Board: React.FC<{
 
     if (activeId === overId) return;
     const isActiveCard = active.data.current?.type === "card";
-    const isOverCard = active.data.current?.type === "card";
+    const isOverCard = over.data.current?.type === "card";
 
-    if (isActiveCard && isOverCard) {
-      setItems((columns) => {
-        const activeColumn = columns[activeColumnId];
-        const overColumn = columns[overColumnId];
+    setItems((prevColumns) => {
+      const updatedColumns = prevColumns.map((column) => ({
+        ...column,
+        cards: [...column.cards],
+      }));
+      const activeColumn = updatedColumns[activeColumnId];
+      const overColumn = updatedColumns[overColumnId];
 
-        if (!activeColumn || !overColumn) return columns; // Handle undefined columns
+      if (!activeColumn || !overColumn) return prevColumns;
 
-        const activeIndex = activeColumn.cards.findIndex(
-          (card) => card?.id === activeId
+      const activeIndex = activeColumn.cards.findIndex(
+        (card) => card?.id === activeId
+      );
+      const overIndex = overColumn.cards.findIndex(
+        (card) => card?.id === overId
+      );
+
+      if (active.data.current?.columnId !== over.data.current?.columnId) {
+        const cardToMove = activeColumn.cards.find(
+          (card) => card.id === activeId
         );
-        const overIndex = overColumn.cards.findIndex(
-          (card) => card?.id === overId
-        );
-
-        if (active.data.current?.columnId !== over.data.current?.columnId) {
-          console.log("before", columns);
-
-          if (activeColumn.cards[activeIndex]?.columnId) {
-            activeColumn.cards[activeIndex].columnId =
-              over.data.current?.columnId ?? "";
-          }
-
-          const cardData = activeColumn.cards[activeIndex];
-
-          const newObjectValue = activeColumn.cards.splice(activeIndex, 1);
-
-          overColumn.cards.push(cardData as CardInterface);
-
-          console.log("after", columns);
-
-          return columns;
+        if (cardToMove) {
+          cardToMove.columnId = over.data.current?.columnId ?? "";
+          activeColumn.cards.splice(activeIndex, 1);
+          overColumn.cards.splice(overIndex + 1, 0, cardToMove);
         }
+      } else {
+        const movedCard = activeColumn.cards.splice(activeIndex, 1)[0];
+        overColumn.cards.splice(overIndex, 0, movedCard);
+      }
 
-        const newArr = arrayMove(activeColumn.cards, activeIndex, overIndex);
-        activeColumn.cards = newArr;
-
-        return columns;
-      });
-    }
+      return updatedColumns;
+    });
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
