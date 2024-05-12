@@ -39,9 +39,6 @@ const Column: React.FC<{
     },
   });
 
-  {
-    // console.log(ColumnData);
-  }
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -49,11 +46,7 @@ const Column: React.FC<{
 
   if (isDragging) {
     return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        //  {...attributes} {...listeners}
-      >
+      <div ref={setNodeRef} style={style}>
         <div className="p-4 m-2 w-[180px]  bg-white rounded-lg shadow-md h-40 opacity-50"></div>
       </div>
     );
@@ -68,11 +61,9 @@ const Column: React.FC<{
               <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             </div>
             <div className="space-y-2 mt-4 ">
-              {ColumnData.cards.map((card) => (
-                <div key={card.id}>
-                  <Card {...card} />
-                </div>
-              ))}
+              {ColumnData.cards.map(
+                (card) => card && <Card key={card.id} {...card} />
+              )}
             </div>
           </SortableContext>
 

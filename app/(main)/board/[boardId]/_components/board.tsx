@@ -102,13 +102,13 @@ const Board: React.FC<{
 
     console.log("active", active);
     console.log("over", over);
-    // console.log("columnData", ColumnData);
+
     const activeColumnId = ColumnData.findIndex(
-      (t) => t.id === active.data.current?.columnId
+      (column) => column.id === active.data.current?.columnId
     );
 
     const overColumnId = ColumnData.findIndex(
-      (t) => t.id === over.data.current?.columnId
+      (column) => column.id === over.data.current?.columnId
     );
 
     if (activeId === overId) return;
@@ -117,48 +117,43 @@ const Board: React.FC<{
 
     if (isActiveCard && isOverCard) {
       setItems((columns) => {
-        if (!columns[activeColumnId]?.cards) return columns;
+        const activeColumn = columns[activeColumnId];
+        const overColumn = columns[overColumnId];
 
-        const activeIndex = columns[activeColumnId].cards.findIndex(
-          (t) => t.id === activeId
-        );
-        const overIndex = columns[activeColumnId].cards.findIndex(
-          (t) => t.id === overId
-        );
+        if (!activeColumn || !overColumn) return columns; // Handle undefined columns
 
-        if (activeIndex === -1 || overIndex === -1) return columns;
+        const activeIndex = activeColumn.cards.findIndex(
+          (card) => card?.id === activeId
+        );
+        const overIndex = overColumn.cards.findIndex(
+          (card) => card?.id === overId
+        );
 
         if (active.data.current?.columnId !== over.data.current?.columnId) {
           console.log("before", columns);
 
-          columns[activeColumnId].cards[activeIndex].columnId =
-            over.data.current?.columnId;
+          if (activeColumn.cards[activeIndex]?.columnId) {
+            activeColumn.cards[activeIndex].columnId =
+              over.data.current?.columnId ?? "";
+          }
 
-          const cardData = columns[activeColumnId].cards[activeIndex];
+          const cardData = activeColumn.cards[activeIndex];
 
-          const newObjectValue = columns[activeColumnId].cards.splice(
-            activeIndex,
-            1
-          );
+          const newObjectValue = activeColumn.cards.splice(activeIndex, 1);
 
-          columns[overColumnId].cards.splice(overIndex, 0, cardData);
+          overColumn.cards.push(cardData as CardInterface);
 
           console.log("after", columns);
 
           return columns;
         }
 
-        const newArr = arrayMove(
-          columns[activeColumnId].cards,
-          activeIndex,
-          overIndex
-        );
-        ColumnData[activeColumnId].cards = newArr;
-        return ColumnData;
+        const newArr = arrayMove(activeColumn.cards, activeIndex, overIndex);
+        activeColumn.cards = newArr;
+
+        return columns;
       });
     }
-
-    //dropping a card over a column
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
