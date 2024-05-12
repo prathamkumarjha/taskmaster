@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
+import { useState } from "react";
 interface CardInterface {
   id: string;
   columnId: string;
@@ -32,7 +32,12 @@ const Card: React.FC<CardInterface> = (cardData: CardInterface) => {
 
   if (isDragging) {
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <div
+        ref={setNodeRef}
+        style={style}
+        // {...attributes}
+        // {...listeners}
+      >
         <div className="bg-gray-200 p-4 rounded-md shadow-md ">
           <div className="opacity-0">{cardData.name}</div>
         </div>

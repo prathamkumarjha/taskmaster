@@ -100,21 +100,25 @@ const Board: React.FC<{
     const activeId = active.id;
     const overId = over.id;
 
-    console.log(active);
+    console.log("active", active);
+    console.log("over", over);
     // console.log("columnData", ColumnData);
     const activeColumnId = ColumnData.findIndex(
       (t) => t.id === active.data.current?.columnId
     );
-    console.log("activeColumnID", activeColumnId);
+
+    const overColumnId = ColumnData.findIndex(
+      (t) => t.id === over.data.current?.columnId
+    );
+
     if (activeId === overId) return;
-    console.log("Active:", activeId, "OverId", overId);
     const isActiveCard = active.data.current?.type === "card";
     const isOverCard = active.data.current?.type === "card";
 
-    //dropping the card on another card
-
     if (isActiveCard && isOverCard) {
       setItems((columns) => {
+        if (!columns[activeColumnId]?.cards) return columns;
+
         const activeIndex = columns[activeColumnId].cards.findIndex(
           (t) => t.id === activeId
         );
@@ -122,16 +126,38 @@ const Board: React.FC<{
           (t) => t.id === overId
         );
 
+        if (activeIndex === -1 || overIndex === -1) return columns;
+
+        if (active.data.current?.columnId !== over.data.current?.columnId) {
+          console.log("before", columns);
+
+          columns[activeColumnId].cards[activeIndex].columnId =
+            over.data.current?.columnId;
+
+          const cardData = columns[activeColumnId].cards[activeIndex];
+
+          const newObjectValue = columns[activeColumnId].cards.splice(
+            activeIndex,
+            1
+          );
+
+          columns[overColumnId].cards.splice(overIndex, 0, cardData);
+
+          console.log("after", columns);
+
+          return columns;
+        }
+
         const newArr = arrayMove(
           columns[activeColumnId].cards,
           activeIndex,
           overIndex
         );
-        console.log(newArr);
         ColumnData[activeColumnId].cards = newArr;
         return ColumnData;
       });
     }
+
     //dropping a card over a column
   };
 
@@ -171,7 +197,7 @@ const Board: React.FC<{
             router.refresh();
           });
       }
-      swap();
+      // swap();
       return arrayMove(items, activeIndex, overIndex);
     });
   };
