@@ -53,9 +53,13 @@ const Column: React.FC<{
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style}>
       <div className="h-[90vh]">
-        <div className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+        <div
+          {...attributes}
+          {...listeners}
+          className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto "
+        >
           <SortableContext items={ColumnData.cards}>
             <div key={ColumnData.id}>
               <ColumnName listName={ColumnData.name} id={ColumnData.id} />

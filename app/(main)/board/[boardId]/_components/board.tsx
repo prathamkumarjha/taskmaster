@@ -68,18 +68,13 @@ const Board: React.FC<{
 
   const [activeCard, setActiveCard] = useState<CardInterface | null>(null);
 
-  const defaultCards: CardInterface[] = ColumnData.flatMap(
-    (column) => column.cards
-  );
-
-  const [cards, setCards] = useState<CardInterface[]>(defaultCards);
-
   const router = useRouter();
 
   useEffect(() => {
     setItems([...ColumnData]);
   }, [ColumnData]);
 
+  //listens if any card or column is being dragged
   const handleDragStart = (event: DragStartEvent) => {
     if (event.active.data.current?.type === "card") {
       setActiveColumn(null);
@@ -93,6 +88,7 @@ const Board: React.FC<{
     }
   };
 
+  //handles changes on card level
   const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -100,38 +96,67 @@ const Board: React.FC<{
     const activeId = active.id;
     const overId = over.id;
 
-    console.log("active", active);
-    console.log("over", over);
+    // Check if the dragged item is a card
+    const isActiveACard = active.data.current?.type === "card";
+    const isOverACard = over.data.current?.type === "card";
 
-    const activeColumnId = ColumnData.findIndex(
+    //check if the dragged item is over a column
+    const isOverAColumn = over.data.current?.type === "column";
+
+    // If the active and over items are the same, or if both are cards, return
+    if (activeId === overId) return;
+    console.log(over);
+    // Find the index of the active and over columns
+    const activeColumnIndex = ColumnData.findIndex(
       (column) => column.id === active.data.current?.columnId
     );
+    console.log("active column id", active.data.current?.columnId);
 
-    const overColumnId = ColumnData.findIndex(
+    const overColumnIndex = ColumnData.findIndex(
       (column) => column.id === over.data.current?.columnId
     );
 
-    if (activeId === overId) return;
-    const isActiveCard = active.data.current?.type === "card";
-    const isOverCard = over.data.current?.type === "card";
+    if (isActiveACard && isOverAColumn && active.data.current) {
+      // Update the columnId of the active card to the id of the column it is being hovered over
+      active.data.current.columnId = over.id;
+
+      setItems((columns) => {
+        const updatedColumns = columns.map((col) => {
+          if (col.id === over.id) {
+            // Check if the active card already exists in the column
+            const isCardExists = col.cards.some(
+              (card) => card.id === active.id
+            );
+            if (!isCardExists) {
+              // Add the active card to the beginning of the cards array of the column it is being hovered over
+              col.cards.unshift(active.data.current as CardInterface);
+            }
+          } else if (col.cards.some((card) => card.id === active.id)) {
+            // Remove the active card from its original column
+            col.cards = col.cards.filter((card) => card.id !== active.id);
+          }
+          console.log(col);
+          return col;
+        });
+        return updatedColumns;
+      });
+    }
 
     setItems((prevColumns) => {
-      const updatedColumns = prevColumns.map((column) => ({
-        ...column,
-        cards: [...column.cards],
-      }));
-      const activeColumn = updatedColumns[activeColumnId];
-      const overColumn = updatedColumns[overColumnId];
+      const updatedColumns = [...prevColumns];
+      const activeColumn = updatedColumns[activeColumnIndex];
+      const overColumn = updatedColumns[overColumnIndex];
 
       if (!activeColumn || !overColumn) return prevColumns;
 
       const activeIndex = activeColumn.cards.findIndex(
-        (card) => card?.id === activeId
+        (card) => card.id === activeId
       );
       const overIndex = overColumn.cards.findIndex(
-        (card) => card?.id === overId
+        (card) => card.id === overId
       );
 
+      // Move the card to a different column
       if (active.data.current?.columnId !== over.data.current?.columnId) {
         const cardToMove = activeColumn.cards.find(
           (card) => card.id === activeId
@@ -141,54 +166,125 @@ const Board: React.FC<{
           activeColumn.cards.splice(activeIndex, 1);
           overColumn.cards.splice(overIndex + 1, 0, cardToMove);
         }
-      } else {
-        const movedCard = activeColumn.cards.splice(activeIndex, 1)[0];
-        overColumn.cards.splice(overIndex, 0, movedCard);
+      } else if (isActiveACard && isOverACard) {
+        const array = arrayMove(
+          prevColumns[activeColumnIndex].cards,
+          activeIndex,
+          overIndex
+        );
+        prevColumns[activeColumnIndex].cards = array;
+        return prevColumns;
       }
-
       return updatedColumns;
     });
+    try {
+      if (isOverACard) {
+        if (activeColumnIndex != overColumnIndex) {
+          axios
+            .patch(`/api/boardChanges/${params.boardId}/cardSwap`, {
+              firstColumn: ColumnData[activeColumnIndex],
+              secondColumn: ColumnData[overColumnIndex],
+            })
+            .then(() => {
+              console.log({ activeColumnIndex, overColumnIndex });
+            });
+        } else {
+          // Move card within the same column
+          const overColumn = ColumnData[overColumnIndex];
+          const overIndex = overColumn.cards.findIndex(
+            (card) => card.id === overId
+          );
+
+          const updatedCards = ColumnData[activeColumnIndex].cards.map(
+            (card, index) => {
+              return {
+                ...card,
+                order: index + 1,
+              };
+            }
+          );
+
+          // Now assign the updated cards array back to the column
+          ColumnData[activeColumnIndex].cards = updatedCards;
+
+          axios
+            .patch(`/api/boardChanges/${params.boardId}/cardSwap`, {
+              updateableColumn: ColumnData[activeColumnIndex],
+            })
+            .then(() => {
+              console.log({ activeColumnIndex, overIndex });
+            });
+        }
+      } else if (isOverAColumn) {
+        const emptyColumnIndex = ColumnData.findIndex(
+          (column) => column.id === over.data.current?.id
+        );
+        axios
+          .patch(`/api/boardChanges/${params.boardId}/cardSwap`, {
+            firstColumn: ColumnData[activeColumnIndex],
+            secondColumn: ColumnData[emptyColumnIndex],
+          })
+          .then(() => {
+            console.log({ activeColumnIndex, emptyColumnIndex });
+            router.refresh();
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (isOverACard) {
+      console.log("over column id", over.data.current?.columnId);
+    } else if (isOverAColumn) {
+      console.log("over column id which is empty", over.id);
+    } else {
+      console.log("the card is over nothing");
+    }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  //swaps columns
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) {
       return;
     }
-    // setActiveCard(null);
-    const activeColumnId = active.id;
 
+    const activeColumnId = active.id;
     const overColumnId = over.id;
 
-    if (overColumnId === activeColumnId) return;
+    if (overColumnId === activeColumnId) {
+      return;
+    }
 
-    setItems((columns) => {
-      const activeIndex = columns.findIndex((col) => col.id === activeColumnId);
-      const overIndex = columns.findIndex((col) => col.id === overColumnId);
-      function swap() {
-        axios
-          .patch(`/api/boardChanges/${params.boardId}/columnSwap`, {
-            activeColumnId,
-            overColumnId,
-          })
-          .then(() => {
-            router.refresh;
-            toast({
-              title: "list sequence updated",
-            });
-          })
-          .catch((error) => {
-            console.error("Error in swapping list:", error);
-            toast({
-              variant: "destructive",
-              title: "unable to update list sequence",
-            });
-            router.refresh();
-          });
-      }
-      // swap();
-      return arrayMove(items, activeIndex, overIndex);
-    });
+    try {
+      // Swap columns in local state
+      setItems((prevItems) => {
+        const activeIndex = prevItems.findIndex(
+          (col) => col.id === activeColumnId
+        );
+        const overIndex = prevItems.findIndex((col) => col.id === overColumnId);
+        return arrayMove(prevItems, activeIndex, overIndex);
+      });
+
+      //  Swap columns on the server
+      await axios.patch(`/api/boardChanges/${params.boardId}/columnSwap`, {
+        activeColumnId,
+        overColumnId,
+      });
+      // Refresh the router
+      router.refresh();
+      // Display success message
+      toast({
+        title: "List sequence updated",
+      });
+    } catch (error) {
+      console.error("Error in swapping columns:", error);
+      toast({
+        variant: "destructive",
+        title: "Unable to update list sequence",
+      });
+      // Handle error
+    }
   };
 
   return (
