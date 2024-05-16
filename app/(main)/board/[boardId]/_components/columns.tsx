@@ -47,24 +47,36 @@ const Column: React.FC<{
   if (isDragging) {
     return (
       <div ref={setNodeRef} style={style}>
-        <div className="p-4 m-2 w-[180px]  bg-white rounded-lg shadow-md h-40 opacity-50"></div>
+        <div className="h-[90vh] opacity-20">
+          <div className="p-4 m-4 w-[300px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+            <SortableContext items={ColumnData.cards}>
+              <div key={ColumnData.id} className=" opacity-0">
+                <ColumnName listName={ColumnData.name} id={ColumnData.id} />
+              </div>
+              <div className="space-y-4 mt-4 opacity-0">
+                {ColumnData.cards.map(
+                  (card) => card && <Card key={card.id} {...card} />
+                )}
+              </div>
+            </SortableContext>
+          </div>
+          <div className="mt-4 opacity-0">
+            <NewCardButton columnId={ColumnData.id} />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
       <div className="h-[90vh]">
-        <div
-          {...attributes}
-          {...listeners}
-          className="p-4 m-4 w-[180px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto "
-        >
+        <div className="p-2 m-4 w-[310px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
           <SortableContext items={ColumnData.cards}>
             <div key={ColumnData.id}>
               <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             </div>
-            <div className="space-y-2 mt-4 ">
+            <div className="space-y-4 mt-4 overflow-auto">
               {ColumnData.cards.map(
                 (card) => card && <Card key={card.id} {...card} />
               )}

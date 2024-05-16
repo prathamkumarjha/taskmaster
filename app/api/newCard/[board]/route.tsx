@@ -11,8 +11,7 @@ export async function POST(
     const body = await req.json();
 
     const { name, columnId } = body;
-    console.log(body);
-    // console.log(body);
+
     //we have to write the code for security of backend here
 
     if (!userId) {

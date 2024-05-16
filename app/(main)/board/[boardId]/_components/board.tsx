@@ -18,6 +18,7 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import Card from "./card";
+import CardModal from "./cardModal/cardModal";
 
 interface BoardInterface {
   id: string;
@@ -99,6 +100,9 @@ const Board: React.FC<{
     // Check if the dragged item is a card
     const isActiveACard = active.data.current?.type === "card";
     const isOverACard = over.data.current?.type === "card";
+    if (active.data.current?.type === "column") {
+      return;
+    }
 
     //check if the dragged item is over a column
     const isOverAColumn = over.data.current?.type === "column";
@@ -186,7 +190,7 @@ const Board: React.FC<{
               secondColumn: ColumnData[overColumnIndex],
             })
             .then(() => {
-              console.log({ activeColumnIndex, overColumnIndex });
+              router.refresh();
             });
         } else {
           // Move card within the same column
@@ -212,7 +216,7 @@ const Board: React.FC<{
               updateableColumn: ColumnData[activeColumnIndex],
             })
             .then(() => {
-              console.log({ activeColumnIndex, overIndex });
+              router.refresh();
             });
         }
       } else if (isOverAColumn) {
@@ -225,7 +229,6 @@ const Board: React.FC<{
             secondColumn: ColumnData[emptyColumnIndex],
           })
           .then(() => {
-            console.log({ activeColumnIndex, emptyColumnIndex });
             router.refresh();
           });
       }
@@ -246,6 +249,10 @@ const Board: React.FC<{
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) {
+      return;
+    }
+
+    if (active.data.current?.type === "card") {
       return;
     }
 
@@ -297,6 +304,7 @@ const Board: React.FC<{
         backgroundAttachment: "fixed",
       }}
     >
+      <CardModal />
       <div className="flex">
         <DndContext
           sensors={sensors}
@@ -315,7 +323,9 @@ const Board: React.FC<{
             <div className="opacity-75 transform rotate-2">
               {activeColumn && <Column ColumnData={activeColumn} />}
             </div>
-            {activeCard && <Card {...activeCard} />}
+            <div className="opacity-75 transform rotate-6">
+              {activeCard && <Card {...activeCard} />}
+            </div>
           </DragOverlay>
         </DndContext>
         <div className="p-4">

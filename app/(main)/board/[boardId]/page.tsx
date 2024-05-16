@@ -1,6 +1,7 @@
 import prismadb from "@/lib/db";
 import Board from "./_components/board";
 import { redirect } from "next/navigation";
+import CardModal from "./_components/cardModal/cardModal";
 
 const boardLayout = async ({ params }: { params: { boardId: string } }) => {
   const id = params.boardId;
@@ -32,6 +33,7 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
 
   return (
     <div className="h-full">
+      {/* <CardModal /> */}
       <Board BoardData={board} ColumnData={columns} />
     </div>
   );

@@ -55,10 +55,20 @@ export const BoardModal = () => {
   const { toast } = useToast();
   const [disabled, setDisabled] = useState(false);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   useEffect(() => {
     form.setValue("imageUrl", selectedBackground);
     selectedBackground == "" ? setDisabled(true) : setDisabled(false);
   }, [form, selectedBackground]);
+
+  if (!isMounted) {
+    return;
+  }
 
   const handleImageSelect = (imageUrl: string) => {
     setSelectedBackground(imageUrl);

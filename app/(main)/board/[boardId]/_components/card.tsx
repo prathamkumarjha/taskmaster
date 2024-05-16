@@ -1,6 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+
+import { useCardModal } from "@/hooks/use-card-modal";
 interface CardInterface {
   id: string;
   columnId: string;
@@ -29,31 +31,33 @@ const Card: React.FC<CardInterface> = (cardData: CardInterface) => {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
+  const cardModal = useCardModal();
   if (isDragging) {
     return (
-      <div
+      <Button
+        className="bg-opacity-15 hover:bg-opacity-20 font-semibold py-10 px-4 border-0 rounded flex text-black variant-ghost bg-gray-600  w-full hover:bg-gray-600 opacity-50"
         ref={setNodeRef}
         style={style}
-        // {...attributes}
-        // {...listeners}
       >
-        <div className="bg-gray-200 p-4 rounded-md shadow-md ">
-          <div className="opacity-0">{cardData.name}</div>
-        </div>
-      </div>
+        {cardData.name}
+      </Button>
     );
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-gray-200 p-4 rounded-md shadow-md"
-    >
-      {cardData.name}
+    <div>
+      <Button
+        className="bg-opacity-15 hover:bg-opacity-50 font-semibold py-10 px-4 border-0 rounded flex text-black variant-ghost bg-gray-600 shadow-lg  w-full text-lg hover:bg-gray-600 "
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        onClick={() => {
+          cardModal.onOpen(cardData.id);
+        }}
+      >
+        <p className="whitespace-normal overflow-hidden ">{cardData.name}</p>
+      </Button>
     </div>
   );
 };

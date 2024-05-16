@@ -69,7 +69,7 @@ const YourWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
           </div>
         ))}
         <Button
-          className="h-50 w-100 flex justify-center items-center space-2 bg-gray-800 md:w-full rounded-lg  hover:bg-gray-700 text-md"
+          className="h-50 w-100 flex p-20 justify-center items-center space-2 bg-gray-800 md:w-full rounded-lg  hover:bg-gray-700 text-md"
           onClick={boardModal.onOpen}
         >
           Create a new board

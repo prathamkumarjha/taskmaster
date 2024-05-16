@@ -70,7 +70,7 @@ const NewListButton: React.FC<NewListButtonInterface> = ({ size }) => {
   if (!newList) {
     return (
       <Button
-        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex"
+        className=" bg-white bg-opacity-15 font-semibold py-4 px-4 border-0 rounded flex hover:bg-white hover:bg-opacity-100 hover:text-black transition-opacity duration-300"
         onClick={() => {
           setNewList(true);
         }}

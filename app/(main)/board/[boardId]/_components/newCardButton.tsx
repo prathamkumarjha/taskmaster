@@ -102,7 +102,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
               </FormItem>
             )}
           />
-          <div className="flex justify-center">
+          <div className="flex ">
             <Button type="submit">Add a card</Button>
             <Button
               variant="ghost"

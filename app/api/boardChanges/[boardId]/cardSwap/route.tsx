@@ -21,8 +21,7 @@ export async function PATCH(
   try {
     const { userId } = auth();
 
-    console.log("here");
-    console.log(updateableColumn, firstColumn, secondColumn);
+    // console.log(updateableColumn, firstColumn, secondColumn);
 
     if (firstColumn && secondColumn) {
       await Promise.all([
