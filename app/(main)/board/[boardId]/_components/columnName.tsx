@@ -5,6 +5,8 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+
 interface ColumnNameProps {
   listName: string;
   id: String;
@@ -71,8 +73,13 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
 
   if (!newName) {
     return (
-      <div className="text-lg" onClick={handleNameClick}>
-        {name}
+      <div className="text-xl" onClick={handleNameClick}>
+        <Badge
+          variant="secondary"
+          className="bg-gray-800 text-white hover:bg-gray-700 shadow-black shadow-lg h-8"
+        >
+          {name}
+        </Badge>
       </div>
     );
   }

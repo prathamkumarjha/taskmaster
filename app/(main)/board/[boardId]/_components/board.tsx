@@ -313,7 +313,7 @@ const Board: React.FC<{
           onDragOver={onDragOver}
         >
           <SortableContext items={items}>
-            <div className="flex flex-row-reverse h-">
+            <div className="flex flex-row-reverse">
               {items.map((col) => (
                 <Column key={col.id} ColumnData={col} />
               ))}

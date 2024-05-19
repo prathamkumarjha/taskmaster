@@ -31,15 +31,16 @@ const Card: React.FC<CardInterface> = (cardData: CardInterface) => {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
   const cardModal = useCardModal();
   if (isDragging) {
     return (
       <Button
-        className="bg-opacity-15 hover:bg-opacity-20 font-semibold py-10 px-4 border-0 rounded flex text-black variant-ghost bg-gray-600  w-full hover:bg-gray-600 opacity-50"
+        className=" bg-opacity-50 font-semibold bg-black shadow-lg w-full text-lg hover:bg-black overflow-hidden"
         ref={setNodeRef}
         style={style}
       >
-        {cardData.name}
+        <span className="opacity-0">{cardData.name}</span>
       </Button>
     );
   }
@@ -47,16 +48,21 @@ const Card: React.FC<CardInterface> = (cardData: CardInterface) => {
   return (
     <div>
       <Button
-        className="bg-opacity-15 hover:bg-opacity-50 font-semibold py-10 px-4 border-0 rounded flex text-black variant-ghost bg-gray-600 shadow-lg  w-full text-lg hover:bg-gray-600 "
+        className=" hover:bg-opacity-75 font-semibold bg-black shadow-md mb-2 shadow-black w-full text-lg overflow-hidden"
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          whiteSpace: "normal",
+          display: "block",
+          lineHeight: "normal",
+        }}
         {...attributes}
         {...listeners}
         onClick={() => {
           cardModal.onOpen(cardData.id);
         }}
       >
-        <p className="whitespace-normal overflow-hidden ">{cardData.name}</p>
+        <p className="whitespace-normal ">{cardData.name}</p>
       </Button>
     </div>
   );

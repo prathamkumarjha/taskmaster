@@ -75,7 +75,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   if (!newList) {
     return (
       <Button
-        className=" bg-white bg-opacity-15 hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex text-black variant-ghost bg-gray-300 hover:bg-gray-500"
+        className=" bg-white hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex text-black variant-ghost hover:bg-gray-500"
         onClick={() => {
           setNewList(true);
         }}

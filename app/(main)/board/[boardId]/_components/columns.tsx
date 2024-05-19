@@ -48,7 +48,7 @@ const Column: React.FC<{
     return (
       <div ref={setNodeRef} style={style}>
         <div className="h-[90vh] opacity-20">
-          <div className="p-4 m-4 w-[300px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+          <div className="p-4 m-4 w-[300px] h-30 rounded-lg shadow-lg max-h-full overflow-auto ">
             <SortableContext items={ColumnData.cards}>
               <div key={ColumnData.id} className=" opacity-0">
                 <ColumnName listName={ColumnData.name} id={ColumnData.id} />
@@ -73,9 +73,7 @@ const Column: React.FC<{
       <div className="h-[90vh]">
         <div className="p-2 m-4 w-[310px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
           <SortableContext items={ColumnData.cards}>
-            <div key={ColumnData.id}>
-              <ColumnName listName={ColumnData.name} id={ColumnData.id} />
-            </div>
+            <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             <div className="space-y-4 mt-4 overflow-auto">
               {ColumnData.cards.map(
                 (card) => card && <Card key={card.id} {...card} />
