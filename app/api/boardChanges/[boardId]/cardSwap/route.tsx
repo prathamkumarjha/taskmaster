@@ -15,9 +15,9 @@ export async function PATCH(
   { params }: { params: { boardId: string } }
 ) {
   const body = await req.json();
+  console.log(body);
   const { updateableColumn, firstColumn, secondColumn } = body;
 
-  console.log(updateableColumn);
   try {
     const { userId } = auth();
 

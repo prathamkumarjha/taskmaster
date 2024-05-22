@@ -24,16 +24,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export interface card {
+export interface CardInterface {
   id: string;
+  columnId: string;
   name: string;
-  card: string;
+  description: string | null;
+  order: number;
 }
 
 export interface Column {
   id: string;
   name: string;
-  cards: [];
+  cards: CardInterface[];
 }
 
 export interface Board {
@@ -56,12 +58,44 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [board, setBoard] = useState<string>("Select a board");
+  const [boardId, setBoardId] = useState<string>("");
   const [list, setList] = useState<string>("Select a list");
-  const [order, setOrder] = useState<number>();
+  const [listId, setListId] = useState<string>("");
+  const [order, setOrder] = useState<number>(-1);
   const [openBoard, setOpenBoard] = useState<boolean>(false);
   const [openList, setOpenList] = useState<boolean>(false);
   const [openOrder, setOpenOrder] = useState<boolean>(false);
   const [columns, setColumns] = useState<Column[]>([]);
+  const [initialBoardId, setInitialBoardId] = useState<string>(
+    cardData.column.boardId
+  );
+  const [initialListId, setInitialListId] = useState<string>(cardData.columnId);
+
+  const itemsPerPage = 7;
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(
+    (columns.find((col) => col.name === list)?.cards.length ?? 0) / itemsPerPage
+  );
+
+  // Function to get orders for the current page
+  const getCurrentPageOrders = (page: number) => {
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return (
+      columns
+        .find((col) => col.name === list)
+        ?.cards.slice(startIndex, endIndex) || []
+    );
+  };
+
+  // State to track current page
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Function to handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const {
     data: boardData,
@@ -72,8 +106,7 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
     queryFn: fetchWholeData,
   });
 
-  console.log(boardData);
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div></div>;
   if (isError) return <div>Error loading card data</div>;
   if (!isOpen) return null;
 
@@ -88,7 +121,6 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
 
   const onBoardSelect = (selectedBoard: { label: string; value: string }) => {
     setBoard(selectedBoard.label);
-
     const boardIndex = boardData?.find(
       (item) => item.id === selectedBoard.value
     );
@@ -98,16 +130,109 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
     }
 
     setList("");
-    setOrder(undefined);
+    setOrder(-1);
+    setBoardId(selectedBoard.value);
+    setOpenBoard(false);
   };
 
   const onListSelect = (selectedList: { label: string; value: string }) => {
     setList(selectedList.label);
-    setOrder(undefined);
+    setListId(selectedList.value);
+    setOrder(0);
+    setOpenList(false);
   };
 
   const onOrderSelect = (selectedOrder: number) => {
-    setOrder(selectedOrder);
+    setOrder((currentPage - 1) * itemsPerPage + selectedOrder);
+    setOpenOrder(false);
+  };
+
+  const onSubmit = async () => {
+    try {
+      const currentColumn = columns.find((col) => col.id === listId);
+      const updatedCard = {
+        ...cardData,
+        columnId: listId,
+        order: order,
+      };
+
+      if (boardId === initialBoardId) {
+        // Update within the same board
+
+        if (cardData.columnId === listId) {
+          await axios.patch(`/api/boardChanges/${initialBoardId}/cardSwap`, {
+            updateableColumn: {
+              cards: currentColumn?.cards.map((card, index) =>
+                card.id === cardData.id
+                  ? updatedCard
+                  : { ...card, order: index - 1 }
+              ),
+            },
+          });
+        } else {
+          const sourceColumn = boardData
+            ?.find((board) => board.id === initialBoardId)
+            ?.lists.find((column) => column.id === initialListId);
+
+          const destinationColumn = columns.find((col) => col.id === listId);
+
+          await axios
+            .patch(`/api/boardChanges/${initialBoardId}/cardSwap`, {
+              firstColumn: {
+                cards: (sourceColumn?.cards ?? [])
+                  .filter((card) => card.id !== cardData.id)
+                  .map((card, index) => ({ ...card, order: index })),
+              },
+              secondColumn: {
+                cards: [...(destinationColumn?.cards ?? []), updatedCard].map(
+                  (card, index) => ({ ...card, order: index })
+                ),
+              },
+            })
+            .then(() => {
+              console.log("done");
+            });
+        }
+      } else {
+        // Move to a different board
+        const sourceColumn = boardData
+          ?.find((board) => board.id === initialBoardId)
+          ?.lists.find((column) => column.id === initialListId);
+
+        const destinationColumn = columns.find((col) => col.id === listId);
+
+        // Update the source column
+        await axios.patch(`/api/boardChanges/${initialBoardId}/cardSwap`, {
+          updateableColumn: {
+            cards: (sourceColumn?.cards ?? [])
+              .filter((card) => card.id !== cardData.id)
+              .map((card, index) => ({ ...card, order: index })),
+          },
+        });
+
+        console.log("Removed card from source column");
+
+        // Update the destination column
+        await axios
+          .patch(`/api/boardChanges/${boardId}/cardSwap`, {
+            updateableColumn: {
+              cards: [...(destinationColumn?.cards ?? []), updatedCard].map(
+                (card, index) => ({ ...card, order: index })
+              ),
+            },
+          })
+          .then(() => {
+            console.log("Added card to destination column");
+          })
+
+          .then(() => {
+            console.log("done");
+          });
+      }
+      onClose();
+    } catch (error) {
+      console.error("Error moving card:", error);
+    }
   };
 
   return (
@@ -201,12 +326,14 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
                         className="text-sm text-white"
                       >
                         {column.name}
-                        <Check
+                        <div
                           className={cn(
-                            "ml-auto h-4 w-4 text-white",
+                            "ml-auto h-4  text-white  hover:text-black",
                             list === column.name ? "opacity-100" : "opacity-0"
                           )}
-                        />
+                        >
+                          (current)
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -224,9 +351,9 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
                 aria-expanded={openOrder}
                 aria-label="Select an order"
                 className="w-[200px] justify-between bg-slate-700 text-white hover:bg-slate-800 hover:text-white border-0 mt-4"
-                disabled={list === "Select a list"}
+                disabled={order === -1}
               >
-                {order !== undefined ? order + 1 : "Select the order"}
+                {order !== -1 ? order + 1 : "Select the order"}
                 <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -236,59 +363,54 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
                   <CommandInput placeholder="Search order..." />
                   <CommandEmpty>No order found.</CommandEmpty>
                   <CommandGroup heading="Orders">
-                    {columns
-                      .find((col) => col.name === list)
-                      ?.cards.map((_, index) => (
-                        <CommandItem
-                          key={index}
-                          onSelect={() => onOrderSelect(index)}
-                          className="text-sm text-white"
-                        >
-                          {index + 1}
-                          <Check
-                            className={cn(
-                              "ml-auto h-4 w-4 text-white",
-                              order === index ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    {columns.find((col) => col.name === list) && (
+                    {getCurrentPageOrders(currentPage).map((_, index) => (
                       <CommandItem
-                        onSelect={() =>
-                          onOrderSelect(
-                            columns.find((col) => col.name === list)?.cards
-                              .length ?? 0
-                          )
-                        }
+                        key={index}
+                        onSelect={() => onOrderSelect(index)}
                         className="text-sm text-white"
                       >
-                        {(columns.find((col) => col.name === list)?.cards
-                          .length ?? 0) + 1}
+                        {index + 1 + (currentPage - 1) * itemsPerPage}
                         <Check
                           className={cn(
                             "ml-auto h-4 w-4 text-white",
-                            order ===
-                              (columns.find((col) => col.name === list)?.cards
-                                .length ?? -1)
+                            order === index + (currentPage - 1) * itemsPerPage
                               ? "opacity-100"
                               : "opacity-0"
                           )}
                         />
                       </CommandItem>
-                    )}
+                    ))}
                   </CommandGroup>
                 </CommandList>
                 <CommandSeparator />
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <Button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-2 py-1 mx-1 rounded-full ${
+                            currentPage === page ? "bg-gray-700" : "bg-gray-600"
+                          } text-white`}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
+                  </div>
+                )}
               </Command>
             </PopoverContent>
           </Popover>
         </div>
-        <div className="space-x-2">
-          <Button className="text-black bg-white hover:text-black, hover:bg-gray-200">
-            cancel
+        <div className="space-x-2 mt-4">
+          <Button className="bg-blue-800 hover:bg-blue-900" onClick={onSubmit}>
+            Submit
           </Button>
-          <Button className="mt-4 ml-0">Submit</Button>
+          <Button className="text-black bg-white hover:text-black, hover:bg-gray-200">
+            Cancel
+          </Button>
         </div>
       </div>
     </div>
