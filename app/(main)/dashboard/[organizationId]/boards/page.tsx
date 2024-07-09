@@ -1,3 +1,4 @@
+import BoardModalProvider from "../../_components/board-modal-provider";
 import FavoriteWorkspaces from "./_components/favoriteWorkspaces";
 import YourWorkspaces from "./_components/yourWorkspaces";
 import prismadb from "@/lib/db";

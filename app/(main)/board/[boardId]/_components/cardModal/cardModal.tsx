@@ -1,12 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useCardModal } from "@/hooks/use-card-modal";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +13,8 @@ import axios from "axios";
 import Image from "next/image";
 import MoveCardModalProvider from "./MoveCardModal/moveCardModalProvider";
 import { useMoveCardModal } from "@/hooks/use-move-card-modal";
+import CardDescription from "./cardDescription";
+import Comments from "./Comments/comment";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -36,13 +37,45 @@ const CardModal = () => {
     moveCardModalClose();
     onClose();
   };
-  if (isLoading) return;
+
+  // State for description section
+  const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+
+  // State for comment section
+  const [commentOpen, setCommentOpen] = useState(false);
+  const commentRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside for closing description and comment sections
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        descriptionRef.current &&
+        !descriptionRef.current.contains(event.target as Node)
+      ) {
+        setDescriptionOpen(false);
+      }
+      if (
+        commentRef.current &&
+        !commentRef.current.contains(event.target as Node)
+      ) {
+        setCommentOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={close}>
-        <DialogContent className="bg-slate-700  text-white border-0">
+        <DialogContent className="bg-slate-700 text-white border-0 overflow-y-scroll h-screen">
           <DialogHeader>
             <DialogTitle className="flex text-white">
               <Image
@@ -56,7 +89,6 @@ const CardModal = () => {
               />
               {cardData?.name}
             </DialogTitle>
-            {/* <DialogDescription className="text-white"> */}
             <span className="flex items-center">
               <span className="mb-2 p-0 text-white">in list</span>
               <Button
@@ -71,7 +103,12 @@ const CardModal = () => {
               </Button>
               <MoveCardModalProvider cardData={cardData} />
             </span>
-            {/* </DialogDescription> */}
+            <CardDescription
+              description={cardData?.column.description}
+              cardId={cardId}
+            />
+
+            <Comments content="" cardId={cardId} />
           </DialogHeader>
         </DialogContent>
       </Dialog>

@@ -91,3 +91,9 @@
 ::-webkit-scrollbar-thumb {
   opacity: 0.5;
 }
+
+ul,
+ol {
+  color: white;
+  padding: 0 1rem;
+}
