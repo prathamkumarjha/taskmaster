@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
 import { BiAlignLeft } from "react-icons/bi";
 import TextEditor from "./textEditor";
+import DOMPurify from "dompurify";
 
 interface cardDescriptionInterface {
   description: string | null;
@@ -34,6 +35,9 @@ const CardDescription: React.FC<cardDescriptionInterface> = ({
     };
   }, []);
 
+  const cardDescription = description || "Add a meaningful description";
+  const sanitizedDescription = DOMPurify.sanitize(cardDescription);
+
   return (
     <div className="text-white  space-y-4 pt-8">
       <div className="flex items-center ">
@@ -51,7 +55,7 @@ const CardDescription: React.FC<cardDescriptionInterface> = ({
           <TextEditor data={description} type="description" cardId={cardId} />
         ) : (
           <div className="h-40 w-80 bg-gray-800 p-2 rounded-lg">
-            {description || "Add a meaningful description"}
+            <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} />
           </div>
         )}
       </div>

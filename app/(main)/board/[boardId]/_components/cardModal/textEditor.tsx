@@ -7,12 +7,14 @@ import BulletList from "@tiptap/extension-bullet-list";
 import Toolbar from "./toolbar";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
 interface TextEditorInterface {
   data: string | null;
   type: string;
   cardId: string;
 }
+import { useStore } from "@/hooks/use-refetch-data";
+import { useToast } from "@/components/ui/use-toast";
 
 const TextEditor: React.FC<TextEditorInterface> = ({ data, type, cardId }) => {
   const editor = useEditor({
@@ -25,12 +27,43 @@ const TextEditor: React.FC<TextEditorInterface> = ({ data, type, cardId }) => {
       },
     },
   });
-  // console.log(editor?.getHTML());
+
+  const router = useRouter();
+  const { setRefresh } = useStore();
+  const { toast } = useToast();
+
   const onsubmit = () => {
     console.log(editor?.getHTML(), "for the type of ", type);
-    const data = editor?.getHTML();
-    axios.post(`/api/card/${cardId}/comment`, { data });
+    const content = editor?.getHTML();
+    if (!content) return;
+
+    const postData = (url: string) => {
+      axios
+        .post(url, { data: content })
+        .then(() => {
+          if (type == "description") {
+            toast({
+              title: `${type} updated`,
+            });
+          } else {
+            toast({
+              title: `${type} added`,
+            });
+          }
+          router.refresh();
+          setRefresh(true);
+          console.log("refreshed", data);
+        })
+        .catch((error) => console.error("Error:", error));
+    };
+
+    if (type === "description") {
+      postData(`/api/card/${cardId}/description`);
+    } else if (type === "comment") {
+      postData(`/api/card/${cardId}/comment`);
+    }
   };
+
   return (
     <div>
       <Toolbar editor={editor} />

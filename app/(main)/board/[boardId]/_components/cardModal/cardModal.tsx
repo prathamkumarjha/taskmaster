@@ -15,15 +15,20 @@ import MoveCardModalProvider from "./MoveCardModal/moveCardModalProvider";
 import { useMoveCardModal } from "@/hooks/use-move-card-modal";
 import CardDescription from "./cardDescription";
 import Comments from "./Comments/comment";
+import { useStore } from "@/hooks/use-refetch-data";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
   const MoveCardModal = useMoveCardModal();
   const cardId = id;
+
+  const { refresh, setRefresh } = useStore();
+
   const {
     data: cardData,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["card", cardId],
     queryFn: async () => {
@@ -32,6 +37,13 @@ const CardModal = () => {
     },
     enabled: !!id,
   });
+
+  useEffect(() => {
+    if (refresh) {
+      refetch().then(() => setRefresh(false));
+    }
+  }, [refresh, refetch, setRefresh]);
+
   const moveCardModalClose = useMoveCardModal().onClose;
   const close = () => {
     moveCardModalClose();
@@ -72,6 +84,7 @@ const CardModal = () => {
   if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
+  console.log(cardData);
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={close}>
@@ -104,7 +117,7 @@ const CardModal = () => {
               <MoveCardModalProvider cardData={cardData} />
             </span>
             <CardDescription
-              description={cardData?.column.description}
+              description={cardData?.description}
               cardId={cardId}
             />
 
