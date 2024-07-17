@@ -297,7 +297,7 @@ const Board: React.FC<{
   return (
     // overflow-y-hidden
     <div
-      className="relative h-screen bg-cover bg-center bg-no-repeat  p-4"
+      className="relative h-screen bg-cover bg-center bg-no-repeat  p-4 overflow-scroll"
       draggable="false"
       style={{
         backgroundImage: `url(${BoardData.imageUrl})`,

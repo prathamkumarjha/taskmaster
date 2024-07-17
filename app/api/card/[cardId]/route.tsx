@@ -22,6 +22,11 @@ export async function GET(
     const cardData = await prismadb.card.findUnique({
       where: { id: cardId },
       include: {
+        comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         column: {
           select: {
             name: true,

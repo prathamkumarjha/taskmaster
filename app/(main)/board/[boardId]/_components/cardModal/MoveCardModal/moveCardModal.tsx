@@ -55,7 +55,6 @@ const fetchWholeData = async (): Promise<Board[]> => {
 const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
   const { isOpen, onClose } = useMoveCardModal();
   const modalRef = useRef<HTMLDivElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
 
   const [board, setBoard] = useState<string>("Select a board");
   const [boardId, setBoardId] = useState<string>("");
@@ -106,7 +105,7 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
     queryFn: fetchWholeData,
   });
 
-  if (isLoading) return <div></div>;
+  if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading card data</div>;
   if (!isOpen) return null;
 
@@ -252,7 +251,7 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
             onClick={onClose}
           />
         </div>
-        <div ref={popoverRef}>
+        <div>
           <Popover open={openBoard} onOpenChange={setOpenBoard}>
             <PopoverTrigger asChild>
               <Button
@@ -408,7 +407,10 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
           <Button className="bg-blue-800 hover:bg-blue-900" onClick={onSubmit}>
             Submit
           </Button>
-          <Button className="text-black bg-white hover:text-black, hover:bg-gray-200">
+          <Button
+            className="text-black bg-white hover:text-black hover:bg-gray-200"
+            onClick={onClose}
+          >
             Cancel
           </Button>
         </div>

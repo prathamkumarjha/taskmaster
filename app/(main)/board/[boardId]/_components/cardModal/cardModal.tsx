@@ -14,8 +14,9 @@ import Image from "next/image";
 import MoveCardModalProvider from "./MoveCardModal/moveCardModalProvider";
 import { useMoveCardModal } from "@/hooks/use-move-card-modal";
 import CardDescription from "./cardDescription";
-import Comments from "./Comments/comment";
+import CommentInput from "./Comments/commentInput";
 import { useStore } from "@/hooks/use-refetch-data";
+import { CommentsList } from "./Comments/commentList";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -85,6 +86,7 @@ const CardModal = () => {
   if (isError) return <div>Error loading card data</div>;
 
   console.log(cardData);
+  const comments = cardData?.comments || [];
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={close}>
@@ -117,11 +119,14 @@ const CardModal = () => {
               <MoveCardModalProvider cardData={cardData} />
             </span>
             <CardDescription
-              description={cardData?.description}
+              description={cardData?.description || ""}
               cardId={cardId}
             />
 
-            <Comments content="" cardId={cardId} />
+            <CommentInput content={comments} cardId={cardId} />
+            <div className="pt-4">
+              <CommentsList content={comments} />
+            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>

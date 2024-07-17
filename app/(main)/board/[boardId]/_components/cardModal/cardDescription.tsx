@@ -12,7 +12,7 @@ const CardDescription: React.FC<cardDescriptionInterface> = ({
   description,
   cardId,
 }) => {
-  console.log(description);
+  // console.log(description);
 
   // State for description section
   const [descriptionOpen, setDescriptionOpen] = useState(false);

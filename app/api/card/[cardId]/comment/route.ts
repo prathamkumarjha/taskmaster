@@ -40,3 +40,32 @@ export async function POST(req: Request, { params }: { params: { cardId: string 
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+
+
+export async function GET(req: Request, {params}:{params:{cardId:string}}){
+
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const { cardId } = params;
+
+  if (!cardId) {
+    return new NextResponse("ID of the card is required", { status: 400 });
+  }
+
+  const comments = await prismadb.comment.findMany({
+    where:{
+      cardId
+    },
+    orderBy:{
+      createdAt: "desc"
+    }
+  })
+
+  console.log(comments)
+  return NextResponse.json(comments)
+
+}

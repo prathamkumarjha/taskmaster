@@ -1,16 +1,26 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Input } from "@/components/ui/input";
 import { BiAlignMiddle } from "react-icons/bi";
 import TextEditor from "../textEditor";
 
+export type comment = {
+  cardId: string;
+  content: string;
+  createdAt: string;
+  id: string;
+  parentId: string;
+  updatedAt: string;
+  userID: string;
+  userName: string;
+  userImage: string;
+};
 interface cardCommentInterface {
-  content: string | null;
+  content: comment[];
   cardId: string;
 }
 
-const Comments: React.FC<cardCommentInterface> = ({ content, cardId }) => {
+const CommentInput: React.FC<cardCommentInterface> = ({ content, cardId }) => {
   // State for comment section
   const [commentOpen, setCommentOpen] = useState(false);
   const commentRef = useRef<HTMLDivElement>(null);
@@ -32,6 +42,18 @@ const Comments: React.FC<cardCommentInterface> = ({ content, cardId }) => {
     };
   }, []);
 
+  //convert data to nested format
+  // console.log(content);
+  // const commentsByParentId = useMemo(() => {
+  //   const group: { [key: string]: comment[] } = {};
+  //   content.forEach((comment) => {
+  //     group[comment.parentId] ||= [];
+  //     group[comment.parentId].push(comment);
+  //   });
+  //   return group;
+  // }, [content]);
+
+  // console.log(commentsByParentId);
   return (
     <div className="space-y-4 pt-4">
       <div
@@ -53,4 +75,4 @@ const Comments: React.FC<cardCommentInterface> = ({ content, cardId }) => {
     </div>
   );
 };
-export default Comments;
+export default CommentInput;
