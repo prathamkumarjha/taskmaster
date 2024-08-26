@@ -52,7 +52,9 @@ const CardDescription: React.FC<cardDescriptionInterface> = ({
         className="cursor-pointer"
       >
         {descriptionOpen ? (
-          <TextEditor data={description} type="description" cardId={cardId} />
+          <div className="w-full">
+            <TextEditor data={description} type="description" cardId={cardId} />
+          </div>
         ) : (
           <div className="h-40 w-80 bg-gray-800 p-2 rounded-lg">
             <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} />

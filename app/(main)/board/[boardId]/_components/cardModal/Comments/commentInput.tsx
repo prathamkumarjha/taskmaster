@@ -16,11 +16,16 @@ export type comment = {
   userImage: string;
 };
 interface cardCommentInterface {
-  content: comment[];
+  content: comment[] | null;
   cardId: string;
+  commentId: string | null;
 }
 
-const CommentInput: React.FC<cardCommentInterface> = ({ content, cardId }) => {
+const CommentInput: React.FC<cardCommentInterface> = ({
+  content,
+  cardId,
+  commentId,
+}) => {
   // State for comment section
   const [commentOpen, setCommentOpen] = useState(false);
   const commentRef = useRef<HTMLDivElement>(null);
@@ -41,19 +46,6 @@ const CommentInput: React.FC<cardCommentInterface> = ({ content, cardId }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  //convert data to nested format
-  // console.log(content);
-  // const commentsByParentId = useMemo(() => {
-  //   const group: { [key: string]: comment[] } = {};
-  //   content.forEach((comment) => {
-  //     group[comment.parentId] ||= [];
-  //     group[comment.parentId].push(comment);
-  //   });
-  //   return group;
-  // }, [content]);
-
-  // console.log(commentsByParentId);
   return (
     <div className="space-y-4 pt-4">
       <div
@@ -64,13 +56,15 @@ const CommentInput: React.FC<cardCommentInterface> = ({ content, cardId }) => {
         <div className="flex space-x-2 items-center">
           <BiAlignMiddle /> <h1>Comments</h1>
         </div>
-        {commentOpen ? (
-          <TextEditor data="" type="comment" cardId={cardId} />
-        ) : (
-          <div className="h-10 w-80 bg-gray-800 p-2 rounded-lg">
-            Add a comment
-          </div>
-        )}
+        <div ref={commentRef}>
+          {commentOpen ? (
+            <TextEditor data="" type="comment" cardId={cardId} />
+          ) : (
+            <div className="h-10 w-80 bg-gray-800 p-2 rounded-lg">
+              Add a comment
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -41,12 +41,12 @@ model card {
   name        String
   description String?
   order       Int
-  comments    comment[]
+  comments    Comment[]
 
   @@index([columnId])
 }
 
-model comment {
+model Comment {
   id        String    @id @default(uuid())
   cardId    String
   card      card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
@@ -54,8 +54,8 @@ model comment {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   parentId  String?
-  parent    comment?  @relation("parentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children  comment[] @relation("parentChild")
+  parent    Comment?  @relation("parentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Comment[] @relation("parentChild")
   userId    String
   userImage String    @db.Text
   userName  String    @db.Text

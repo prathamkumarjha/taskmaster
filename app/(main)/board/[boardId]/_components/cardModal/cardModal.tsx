@@ -17,6 +17,7 @@ import CardDescription from "./cardDescription";
 import CommentInput from "./Comments/commentInput";
 import { useStore } from "@/hooks/use-refetch-data";
 import { CommentsList } from "./Comments/commentList";
+import { AddToCard } from "./AddToCard/AddToCard";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -85,7 +86,6 @@ const CardModal = () => {
   if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
-  console.log(cardData);
   const comments = cardData?.comments || [];
   return (
     <div>
@@ -104,28 +104,42 @@ const CardModal = () => {
               />
               {cardData?.name}
             </DialogTitle>
-            <span className="flex items-center">
-              <span className="mb-2 p-0 text-white">in list</span>
-              <Button
-                className="pl-2 underline text-white mt-0 pt-0"
-                variant="link"
-                onClick={() => {
-                  MoveCardModal.onOpen();
-                  console.log("button is clicked", MoveCardModal.onOpen);
-                }}
-              >
-                {cardData?.column.name}
-              </Button>
-              <MoveCardModalProvider cardData={cardData} />
-            </span>
-            <CardDescription
-              description={cardData?.description || ""}
-              cardId={cardId}
-            />
 
-            <CommentInput content={comments} cardId={cardId} />
-            <div className="pt-4">
-              <CommentsList content={comments} />
+            <div>
+              <span className="flex items-center">
+                <span className="mb-2 p-0 text-white">in list</span>
+                <Button
+                  className="pl-2 underline text-white mt-0 pt-0"
+                  variant="link"
+                  onClick={() => {
+                    MoveCardModal.onOpen();
+                    console.log("button is clicked", MoveCardModal.onOpen);
+                  }}
+                >
+                  {cardData?.column.name}
+                </Button>
+                <MoveCardModalProvider cardData={cardData} />
+              </span>
+            </div>
+            <div className="flex">
+              <div>
+                <div className="flex space-x-2 justify-between">
+                  <div className="w-80">
+                    <CardDescription
+                      description={cardData?.description || ""}
+                      cardId={cardId}
+                    />
+                  </div>
+                  <AddToCard />
+                </div>
+
+                <CommentInput content={comments} cardId={cardId} commentId="" />
+                <div className="overflow-scroll w-full">
+                  <div className="pt-4">
+                    <CommentsList content={comments} />
+                  </div>
+                </div>
+              </div>
             </div>
           </DialogHeader>
         </DialogContent>

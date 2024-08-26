@@ -12,11 +12,17 @@ interface TextEditorInterface {
   data: string | null;
   type: string;
   cardId: string;
+  commentId?: string;
 }
 import { useStore } from "@/hooks/use-refetch-data";
 import { useToast } from "@/components/ui/use-toast";
 
-const TextEditor: React.FC<TextEditorInterface> = ({ data, type, cardId }) => {
+const TextEditor: React.FC<TextEditorInterface> = ({
+  data,
+  type,
+  cardId,
+  commentId,
+}) => {
   const editor = useEditor({
     extensions: [StarterKit, Bold, Italic, BulletList],
     content: data || "",
@@ -33,13 +39,12 @@ const TextEditor: React.FC<TextEditorInterface> = ({ data, type, cardId }) => {
   const { toast } = useToast();
 
   const onsubmit = () => {
-    console.log(editor?.getHTML(), "for the type of ", type);
     const content = editor?.getHTML();
     if (!content) return;
 
     const postData = (url: string) => {
       axios
-        .post(url, { data: content })
+        .post(url, { data: content, parentId: commentId })
         .then(() => {
           if (type == "description") {
             toast({
@@ -60,6 +65,9 @@ const TextEditor: React.FC<TextEditorInterface> = ({ data, type, cardId }) => {
     if (type === "description") {
       postData(`/api/card/${cardId}/description`);
     } else if (type === "comment") {
+      postData(`/api/card/${cardId}/comment`);
+    }
+    if (type === "reply") {
       postData(`/api/card/${cardId}/comment`);
     }
   };

@@ -17,11 +17,23 @@ export async function POST(req: Request, { params }: { params: { cardId: string 
   }
 
   const body = await req.json();
-  const { data, parentId } = body;  // Assuming parentId is passed if it's a nested comment
+  const { data, parentId } = body;
 
-  const userData = await clerkClient.users.getUser(userId!);
+  const userData = await clerkClient.users.getUser(userId);
 
   try {
+    // Check if parent comment exists if parentId is provided
+    if (parentId) {
+      const parentComment = await prismadb.comment.findUnique({
+        where: { id: parentId },
+      });
+
+      if (!parentComment) {
+        return new NextResponse('Parent comment does not exist', { status: 400 });
+      }
+    }
+
+    // Create new comment
     const comment = await prismadb.comment.create({
       data: {
         card: {
@@ -30,7 +42,7 @@ export async function POST(req: Request, { params }: { params: { cardId: string 
         content: data,
         userId,
         userImage: userData.imageUrl,
-        userName: userData.firstName + " "+ userData.lastName ,
+        userName: `${userData.firstName} ${userData.lastName}`,
         parent: parentId ? { connect: { id: parentId } } : undefined
       }
     });
@@ -40,7 +52,6 @@ export async function POST(req: Request, { params }: { params: { cardId: string 
     return new NextResponse("Internal error", { status: 500 });
   }
 }
-
 
 export async function GET(req: Request, {params}:{params:{cardId:string}}){
 
@@ -68,4 +79,53 @@ export async function GET(req: Request, {params}:{params:{cardId:string}}){
   console.log(comments)
   return NextResponse.json(comments)
 
+}
+
+export async function DELETE(req: Request) {
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  let body;
+  try {
+    body = await req.json();
+  } catch (error) {
+    return new NextResponse("Invalid JSON body", { status: 400 });
+  }
+
+  const { cardId, commentId } = body;
+
+  if (!cardId || !commentId) {
+    return new NextResponse("Card ID and Comment ID are required", { status: 400 });
+  }
+
+  // Custom function to recursively delete comments and their children
+  async function deleteCommentAndChildren(commentId: string) {
+    // Find all child comments
+    const childComments = await prismadb.comment.findMany({
+      where: {
+        parentId: commentId
+      }
+    });
+
+    // Recursively delete each child comment
+    for (const child of childComments) {
+      await deleteCommentAndChildren(child.id);
+    }
+
+    // Delete the comment itself
+    await prismadb.comment.delete({
+      where: { id: commentId }
+    });
+  }
+
+  try {
+    await deleteCommentAndChildren(commentId);
+    return new NextResponse("Comment and its children deleted successfully", { status: 200 });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
 }
