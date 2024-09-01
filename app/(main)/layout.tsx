@@ -3,7 +3,7 @@ import BoardModalProvider from "./dashboard/_components/board-modal-provider";
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
     // overflow-y-hidden min-h-screen
-    <div className="bg-custom-blue min-h-screen  overflow-y-hidden ">
+    <div className="bg-custom-blue min-h-screen   ">
       <BoardModalProvider />
       {children}
     </div>

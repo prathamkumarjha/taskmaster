@@ -60,7 +60,7 @@ const CommentInput: React.FC<cardCommentInterface> = ({
           {commentOpen ? (
             <TextEditor data="" type="comment" cardId={cardId} />
           ) : (
-            <div className="h-10 w-80 bg-gray-800 p-2 rounded-lg">
+            <div className="h-10 w-80 bg-gray-600 p-2 rounded-lg">
               Add a comment
             </div>
           )}

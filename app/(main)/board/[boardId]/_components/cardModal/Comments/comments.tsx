@@ -70,7 +70,7 @@ export const Comments: React.FC<CommentsInterface> = ({
                 </span>
               </div>
             </div>
-            <div className="comment-content text-gray-300 bg-gray-800 p-4 rounded-lg">
+            <div className="comment-content text-gray-300 bg-gray-600 p-4 rounded-lg">
               <div
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(comment.content),

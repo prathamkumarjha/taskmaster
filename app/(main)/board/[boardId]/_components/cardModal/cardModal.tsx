@@ -1,16 +1,11 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import Image from "next/image";
 import { useCardModal } from "@/hooks/use-card-modal";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Image from "next/image";
 import MoveCardModalProvider from "./MoveCardModal/moveCardModalProvider";
 import { useMoveCardModal } from "@/hooks/use-move-card-modal";
 import CardDescription from "./cardDescription";
@@ -18,6 +13,7 @@ import CommentInput from "./Comments/commentInput";
 import { useStore } from "@/hooks/use-refetch-data";
 import { CommentsList } from "./Comments/commentList";
 import { AddToCard } from "./AddToCard/AddToCard";
+import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -63,17 +59,19 @@ const CardModal = () => {
   // Handle click outside for closing description and comment sections
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        descriptionRef.current &&
-        !descriptionRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Element; // Assert as Element
+
+      if (descriptionRef.current && !descriptionRef.current.contains(target)) {
         setDescriptionOpen(false);
       }
-      if (
-        commentRef.current &&
-        !commentRef.current.contains(event.target as Node)
-      ) {
+      if (commentRef.current && !commentRef.current.contains(target)) {
         setCommentOpen(false);
+      }
+      if (
+        !target.closest(".modal-content") &&
+        !target.closest(".modal-overlay")
+      ) {
+        close();
       }
     }
 
@@ -81,70 +79,97 @@ const CardModal = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [close]);
 
   if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
+  //json for image Animated tootltip
+  const people = cardData?.members.map((member: any) => ({
+    id: member.member.userId,
+    name: member.member.userName,
+    designation: member.memberDesignation,
+    image: member.member.imageUrl,
+  }));
+
   const comments = cardData?.comments || [];
+
   return (
-    <div>
-      <Dialog open={isOpen} onOpenChange={close}>
-        <DialogContent className="bg-slate-700 text-white border-0 overflow-y-scroll h-screen">
-          <DialogHeader>
-            <DialogTitle className="flex text-white">
-              <Image
-                draggable="false"
-                alt="card svg"
-                src="/trello.svg"
-                width={20}
-                height={20}
-                className="mr-2 select-none text-white fill-white"
-                style={{ filter: "invert(100%)" }}
-              />
-              {cardData?.name}
-            </DialogTitle>
-
-            <div>
-              <span className="flex items-center">
-                <span className="mb-2 p-0 text-white">in list</span>
-                <Button
-                  className="pl-2 underline text-white mt-0 pt-0"
-                  variant="link"
-                  onClick={() => {
-                    MoveCardModal.onOpen();
-                    console.log("button is clicked", MoveCardModal.onOpen);
-                  }}
-                >
-                  {cardData?.column.name}
-                </Button>
-                <MoveCardModalProvider cardData={cardData} />
-              </span>
-            </div>
-            <div className="flex">
-              <div>
-                <div className="flex space-x-2 justify-between">
-                  <div className="w-80">
-                    <CardDescription
-                      description={cardData?.description || ""}
-                      cardId={cardId}
-                    />
+    <>
+      {isOpen && (
+        <>
+          {/* Modal Overlay */}
+          <div className=" inset-0 bg-black/50 z-40" onClick={close} />
+          {/* Modal Content */}
+          <div
+            className=" fixed inset-0 z-50 flex items-center justify-center "
+            style={{ overflowY: "auto" }}
+          >
+            <div className="bg-gray-800 text-white w-full max-w-lg h-auto rounded-lg shadow-lg overflow-hidden modal-content mt-24">
+              <div className="p-6">
+                <div className="flex items-center justify-between border-b border-gray-600 pb-4">
+                  <div>
+                    <div className="flex items-center text-white p-0">
+                      <Image
+                        draggable="false"
+                        alt="card svg"
+                        src="/trello.svg"
+                        width={20}
+                        height={20}
+                        className="mr-2"
+                        style={{ filter: "invert(100%)" }}
+                      />
+                      <span className="text-lg font-semibold">
+                        {cardData?.name}
+                      </span>
+                    </div>
+                    <Button
+                      className="text-blue-400 hover:text-blue-300 h-0 p-2"
+                      variant="link"
+                      onClick={() => {
+                        MoveCardModal.onOpen();
+                        console.log("button is clicked", MoveCardModal.onOpen);
+                      }}
+                    >
+                      {cardData?.column.name}
+                    </Button>
                   </div>
-                  <AddToCard />
                 </div>
+                <MoveCardModalProvider cardData={cardData} />
+                <div className="mt-4">
+                  <div className="space-y-2">
+                    Members
+                    <div className="flex flex-row items-center ml-4  w-full">
+                      <AnimatedTooltip items={people} />
+                    </div>
+                  </div>
 
-                <CommentInput content={comments} cardId={cardId} commentId="" />
-                <div className="overflow-scroll w-full">
-                  <div className="pt-4">
-                    <CommentsList content={comments} />
+                  <div className="flex space-x-4">
+                    <div className="w-full">
+                      <CardDescription
+                        description={cardData?.description || ""}
+                        cardId={cardId}
+                      />
+                    </div>
+                    <AddToCard cardId={cardId} members={people} />
+                  </div>
+                  <div className="mt-6">
+                    <CommentInput
+                      content={comments}
+                      cardId={cardId}
+                      commentId=""
+                    />
+                    <div className="overflow-y-auto max-h-80 mt-4">
+                      <CommentsList content={comments} />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 

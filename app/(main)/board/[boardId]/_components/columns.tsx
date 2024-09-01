@@ -74,7 +74,7 @@ const Column: React.FC<{
         <div className="p-2 m-4 w-[310px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
           <SortableContext items={ColumnData.cards}>
             <ColumnName listName={ColumnData.name} id={ColumnData.id} />
-            <div className="space-y-4 mt-4 overflow-auto">
+            <div className="space-y-4 mt-4 overflow-auto max-h-full">
               {ColumnData.cards.map(
                 (card) => card && <Card key={card.id} {...card} />
               )}

@@ -7,6 +7,7 @@ export async function GET(){
     if (!userId || !orgId) {
         return new NextResponse("Unauthorized", { status: 401 });
       }
+      
       const organizationId = orgId;
     const response = await clerkClient.organizations.getOrganizationMembershipList({organizationId})
      // Extract only the relevant fields
@@ -15,6 +16,6 @@ export async function GET(){
       name: membership.publicUserData?.firstName ? `${membership.publicUserData.firstName} ${membership.publicUserData.lastName}` : 'Unknown',
       imageUrl: membership.publicUserData?.imageUrl
     }));
-    console.log(simplifiedResponse)
+    // console.log(simplifiedResponse)
     return NextResponse.json({simplifiedResponse})
 }

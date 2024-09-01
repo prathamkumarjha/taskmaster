@@ -251,7 +251,7 @@ const MoveCardModal: React.FC<CardModalProviderProps> = ({ cardData }) => {
             onClick={onClose}
           />
         </div>
-        <div>
+        <div className="space-x-4">
           <Popover open={openBoard} onOpenChange={setOpenBoard}>
             <PopoverTrigger asChild>
               <Button

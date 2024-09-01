@@ -1,6 +1,7 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { string } from "zod";
 
 export async function GET(
   req: Request,
@@ -39,6 +40,18 @@ export async function GET(
             },
           },
         },
+      members: {
+        select:{
+          memberDesignation: true,
+          member:{
+            select:{
+              userId: true,
+              userName: true,
+              imageUrl: true
+            }
+          }
+        }
+      }
       },
     });
 

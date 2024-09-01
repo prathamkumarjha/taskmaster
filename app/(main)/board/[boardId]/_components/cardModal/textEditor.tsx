@@ -29,7 +29,7 @@ const TextEditor: React.FC<TextEditorInterface> = ({
     editorProps: {
       attributes: {
         class:
-          "p-2 mt-2 border-0 outline-2 text-gray-200 rounded-lg min-h-20 bg-gray-800 list-disc ",
+          "p-2 mt-2 border-0 outline-2 text-gray-200 rounded-lg min-h-20 bg-gray-600 list-disc ",
       },
     },
   });

@@ -35,13 +35,17 @@ model list {
 }
 
 model card {
-  id          String    @id @default(uuid())
+  id          String        @id @default(uuid())
   columnId    String
-  column      list      @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  column      list          @relation(fields: [columnId], references: [id], onDelete: Cascade)
   name        String
   description String?
   order       Int
+  date        DateTime?
   comments    Comment[]
+  colors      colorOnCard[]
+  members     cardMember[]
+  checklists  checklist[]
 
   @@index([columnId])
 }
@@ -62,4 +66,93 @@ model Comment {
 
   @@index([cardId])
   @@index([parentId])
+}
+
+model members {
+  userId   String       @id
+  userName String
+  imageUrl String
+  cards    cardMember[] // Relation through cardMember
+
+  @@index([userId]) // Index on userId to speed up queries
+}
+
+model cardMember {
+  cardId            String
+  memberId          String
+  memberDesignation String
+  card              card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  member            members @relation(fields: [memberId], references: [userId], onDelete: Cascade)
+
+  @@id([cardId, memberId]) // Composite primary key
+  @@index([cardId]) // Index on cardId to speed up queries
+  @@index([memberId]) // Index on memberId to speed up queries
+}
+
+enum Color {
+  DARK_OLIVE_GREEN // #556B2F
+  FOREST_GREEN // #228B22
+  DARK_SEA_GREEN // #8FBC8F
+  MOSS_GREEN // #8A9A5B
+  HUNTER_GREEN // #355E3B
+  DARK_PINK // #E75480
+  DEEP_PINK // #FF1493
+  RASPBERRY // #872657
+  DARK_HOT_PINK // #FF007F
+  MAROON // #800000
+  INDIGO // #4B0082
+  EGGPLANT // #614051
+  PLUM // #8E4585
+  ROYAL_PURPLE // #7851A9
+  DARK_ORCHID // #9932CC
+  MIDNIGHT_BLUE // #191970
+  NAVY_BLUE // #000080
+  DARK_SLATE_BLUE // #483D8B
+  PRUSSIAN_BLUE // #003153
+  ROYAL_BLUE // #002366
+  DARK_RED // #8B0000
+  BURGUNDY // #800020
+  CRIMSON // #DC143C
+  FIREBRICK // #B22222
+  BLOOD_RED // #660000
+  DARK_GOLDENROD // #B8860B
+  MUSTARD // #8B8000
+  OLIVE // #808000
+  KHAKI // #BDB76B
+  BRONZE // #665D1E
+  DARK_CYAN // #008B8B
+  SLATE_GRAY // #708090
+  DEEP_SEA_BLUE // #002F6C
+  MAHOGANY // #C04000
+  SADDLE_BROWN // #8B4513
+}
+
+model colorOnCard {
+  id     String  @id @default(uuid())
+  cardId String
+  card   card    @relation(fields: [cardId], references: [id])
+  color  Color
+  name   String?
+
+  @@index([cardId]) // Index on cardId to speed up queries
+}
+
+model checklist {
+  checkListId String @id @default(uuid())
+  name        String
+  todos       todo[]
+  cardId      String
+  card        card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model todo {
+  todoId      String    @id @default(uuid())
+  name        String
+  done        Boolean
+  checkListId String
+  checkList   checklist @relation(fields: [checkListId], references: [checkListId], onDelete: Cascade)
+
+  @@index([checkListId])
 }
