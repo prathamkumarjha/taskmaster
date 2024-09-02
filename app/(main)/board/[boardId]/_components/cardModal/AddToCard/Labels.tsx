@@ -2,6 +2,22 @@ import { Button } from "@/components/ui/button";
 import { MdLabel } from "react-icons/md";
 import { useState, useRef, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FaPencilAlt } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import axios from "axios";
+import { useStore } from "@/hooks/use-refetch-data";
 
 // Define the dark colors with proper typing
 const darkColors: { [key: string]: string } = {
@@ -42,11 +58,12 @@ const darkColors: { [key: string]: string } = {
   saddleBrown: "#8B4513",
 };
 
-export const Labels = () => {
+export const Labels = ({ cardId }: { cardId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-
+  const [selectedColor, setSelectedColor] = useState("");
+  const { refresh, setRefresh } = useStore();
   // Arrays of colors for different varieties
   const greenColors = [
     "darkOliveGreen",
@@ -93,7 +110,38 @@ export const Labels = () => {
     ];
   };
 
-  const selectedColorNames = getRandomColors();
+  const [selectedColorNames] = useState(getRandomColors);
+
+  const formSchema = z.object({
+    labelname: z.string().min(2, {
+      message: "labelname must be at least 2 characters.",
+    }),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      labelname: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+    const labelName = values.labelname;
+    try {
+      const del = await axios.post(`/api/card/${cardId}/label`, {
+        labelName,
+        selectedColor,
+      });
+      console.log(del);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefresh(true);
+    }
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -120,12 +168,57 @@ export const Labels = () => {
     >
       <span className="mb-4">Select a label</span>
       {selectedColorNames.map((colorName, index) => (
-        <div key={index} className="flex space-x-2 items-center">
-          <Checkbox className="border-white" />
-          <div
-            className="w-full h-8 rounded-lg shadow-md text-white font-semibold flex items-center justify-center cursor-pointer"
-            style={{ backgroundColor: darkColors[colorName] }}
-          ></div>
+        <div key={index}>
+          <div className="flex space-x-2 items-center">
+            <Checkbox className="border-white" />
+            <div
+              className="w-full h-8 rounded-lg shadow-md font-semibold flex items-center justify-center cursor-pointer"
+              style={{ backgroundColor: darkColors[colorName] }}
+            ></div>
+            <FaPencilAlt
+              className="cursor-pointer"
+              onClick={() => setSelectedColor(colorName)}
+            />
+          </div>
+          {selectedColor === colorName && (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="labelname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder=""
+                          {...field}
+                          className="bg-gray-600 placeholder:text-gray-200"
+                        />
+                      </FormControl>
+                      <FormDescription>This is your Labelname.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="space-x-2">
+                  <Button type="submit" onClick={() => onSubmit}>
+                    Submit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setSelectedColor("")}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
         </div>
       ))}
     </div>

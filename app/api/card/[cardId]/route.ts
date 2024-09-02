@@ -51,6 +51,11 @@ export async function GET(
             }
           }
         }
+      },
+      colors:{
+        where:{
+          cardId:cardId
+        }
       }
       },
     });

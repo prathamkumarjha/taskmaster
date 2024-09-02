@@ -1,5 +1,7 @@
 "use client";
 
+import { FaTrashAlt } from "react-icons/fa";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -14,7 +16,9 @@ import { useStore } from "@/hooks/use-refetch-data";
 import { CommentsList } from "./Comments/commentList";
 import { AddToCard } from "./AddToCard/AddToCard";
 import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
-
+import { Popover } from "@/components/ui/popover";
+import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Input } from "@/components/ui/input";
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
   const MoveCardModal = useMoveCardModal();
@@ -93,6 +97,20 @@ const CardModal = () => {
   }));
 
   const comments = cardData?.comments || [];
+  console.log(cardData);
+  console.log(cardData?.colors);
+
+  const onDelete = async (id: string) => {
+    try {
+      await axios.delete(`/api/card/${cardId}/label`, {
+        data: { id },
+      });
+      // Optionally handle success here
+    } catch (error) {
+      console.error("Error deleting label:", error);
+      // Optionally handle error here
+    }
+  };
 
   return (
     <>
@@ -101,10 +119,7 @@ const CardModal = () => {
           {/* Modal Overlay */}
           <div className=" inset-0 bg-black/50 z-40" onClick={close} />
           {/* Modal Content */}
-          <div
-            className=" fixed inset-0 z-50 flex items-center justify-center "
-            style={{ overflowY: "auto" }}
-          >
+          <div className=" fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
             <div className="bg-gray-800 text-white w-full max-w-lg h-auto rounded-lg shadow-lg overflow-hidden modal-content mt-24">
               <div className="p-6">
                 <div className="flex items-center justify-between border-b border-gray-600 pb-4">
@@ -135,6 +150,51 @@ const CardModal = () => {
                     </Button>
                   </div>
                 </div>
+
+                {cardData.colors.length == 0 ? (
+                  <></>
+                ) : (
+                  <div>
+                    Labels
+                    <div className="h-20 border-2 border-gray-900 shadow-inner  shadow-black">
+                      <ScrollArea className="h-full flex items-center justify-center">
+                        <div className="flex space-x-2 mt-4  px-2">
+                          {cardData.colors.map((color: any) => (
+                            <div key={color.id}>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    // key={color.id}
+
+                                    className={`h-8 min-w-20 rounded-lg bg-${color.color} hover:bg-${color.color} hover:opacity-70 flex justify-center items-center overflow-hidden p-2 cursor-pointer`}
+                                  >
+                                    <span className="truncate">
+                                      {color.name}
+                                    </span>
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="bg-gray-900 p-4 z-[110] rounded-lg shadow-md space-y-2 ">
+                                  <div className="text-lg flex justify-center">
+                                    {color.name}
+                                  </div>
+                                  <Button
+                                    variant="destructive"
+                                    onClick={() => onDelete(color.id)}
+                                  >
+                                    <FaTrashAlt className="text-white mr-2" />
+                                    Delete
+                                  </Button>
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          ))}
+                          <ScrollBar orientation="horizontal" />
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </div>
+                )}
+
                 <MoveCardModalProvider cardData={cardData} />
                 <div className="mt-4">
                   <div className="space-y-2">

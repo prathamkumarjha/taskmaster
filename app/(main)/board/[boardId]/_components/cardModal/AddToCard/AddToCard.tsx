@@ -21,7 +21,7 @@ export const AddToCard = ({
     <div className="ml-0 mt-4 pt-8">
       <div>Add to card</div>
       <Members cardId={cardId} assigned={members} />
-      <Labels />
+      <Labels cardId={cardId} />
       <CheckList />
       <Dates />
     </div>
