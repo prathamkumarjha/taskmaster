@@ -16,11 +16,9 @@ export async function POST(
 
   const body = await req.json();
   console.log(body);
-  const {  labelName, selectedColor } = body;
+  const {  labelName, selectedColor, color } = body;
 
-  if (!selectedColor) {
-    return new NextResponse("User ID and User Name are required", { status: 400 });
-  }
+ 
 
   try {
     let newLabel ;
@@ -33,6 +31,9 @@ export async function POST(
           });
     }
     else {
+      // if(!selectedColor){
+      //   return new NextResponse("color and labelName is required ", {status:400})
+      // }
         newLabel = await prismadb.colorOnCard.create({
             data: {
               cardId: cardId,

@@ -18,7 +18,7 @@ import { AddToCard } from "./AddToCard/AddToCard";
 import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import { Popover } from "@/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { Input } from "@/components/ui/input";
+
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
   const MoveCardModal = useMoveCardModal();
@@ -45,6 +45,11 @@ const CardModal = () => {
       refetch().then(() => setRefresh(false));
     }
   }, [refresh, refetch, setRefresh]);
+
+  //set refresh to true just in case if this helps router dom to give correct labels
+  useEffect(() => {
+    setRefresh(true);
+  }, []);
 
   const moveCardModalClose = useMoveCardModal().onClose;
   const close = () => {
@@ -97,8 +102,6 @@ const CardModal = () => {
   }));
 
   const comments = cardData?.comments || [];
-  console.log(cardData);
-  console.log(cardData?.colors);
 
   const onDelete = async (id: string) => {
     try {
@@ -109,6 +112,8 @@ const CardModal = () => {
     } catch (error) {
       console.error("Error deleting label:", error);
       // Optionally handle error here
+    } finally {
+      setRefresh(true);
     }
   };
 

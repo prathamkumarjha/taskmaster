@@ -18,6 +18,18 @@ import {
 } from "@/components/ui/form";
 import axios from "axios";
 import { useStore } from "@/hooks/use-refetch-data";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { FaCheck } from "react-icons/fa";
 
 // Define the dark colors with proper typing
 const darkColors: { [key: string]: string } = {
@@ -63,6 +75,8 @@ export const Labels = ({ cardId }: { cardId: string }) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [selectedColor, setSelectedColor] = useState("");
+  const [isOpenForm, setIsOpenForm] = useState(false);
+  const [inputData, setInputData] = useState("");
   const { refresh, setRefresh } = useStore();
   // Arrays of colors for different varieties
   const greenColors = [
@@ -143,6 +157,49 @@ export const Labels = ({ cardId }: { cardId: string }) => {
     }
   }
 
+  async function onSubmitWithoutName(color: string) {
+    try {
+      setSelectedColor(color);
+
+      console.log("the color which is going to be added is", selectedColor);
+      const del = await axios.post(`/api/card/${cardId}/label`, {
+        selectedColor: color,
+      });
+
+      console.log(del);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefresh(true);
+    }
+  }
+
+  async function onSubmitNewLabelForm() {
+    try {
+      let response;
+      console.log("selected color is", selectedColor);
+      if (inputData !== "") {
+        // Check if inputData is not empty
+
+        const labelName = inputData;
+        response = await axios.post(`/api/card/${cardId}/label`, {
+          selectedColor,
+          labelName,
+        });
+      } else {
+        // If inputData is empty, only send selectedColor
+        response = await axios.post(`/api/card/${cardId}/label`, {
+          selectedColor,
+        });
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefresh(true);
+    }
+  }
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node;
@@ -170,17 +227,23 @@ export const Labels = ({ cardId }: { cardId: string }) => {
       {selectedColorNames.map((colorName, index) => (
         <div key={index}>
           <div className="flex space-x-2 items-center">
-            <Checkbox className="border-white" />
             <div
               className="w-full h-8 rounded-lg shadow-md font-semibold flex items-center justify-center cursor-pointer"
               style={{ backgroundColor: darkColors[colorName] }}
+              onClick={() => {
+                onSubmitWithoutName(colorName);
+                setIsOpenForm(false);
+              }}
             ></div>
             <FaPencilAlt
               className="cursor-pointer"
-              onClick={() => setSelectedColor(colorName)}
+              onClick={() => {
+                setSelectedColor(colorName);
+                setIsOpenForm(true);
+              }}
             />
           </div>
-          {selectedColor === colorName && (
+          {selectedColor === colorName && isOpenForm && (
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -205,13 +268,19 @@ export const Labels = ({ cardId }: { cardId: string }) => {
                   )}
                 />
                 <div className="space-x-2">
-                  <Button type="submit" onClick={() => onSubmit}>
+                  <Button
+                    type="submit"
+                    //  onClick={() => onSubmit}
+                  >
                     Submit
                   </Button>
                   <Button
                     type="button"
                     variant="destructive"
-                    onClick={() => setSelectedColor("")}
+                    onClick={() => {
+                      setSelectedColor("");
+                      setIsOpenForm(false);
+                    }}
                   >
                     Cancel
                   </Button>
@@ -221,6 +290,61 @@ export const Labels = ({ cardId }: { cardId: string }) => {
           )}
         </div>
       ))}
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="link" className="text-white">
+            create a new label
+          </Button>
+        </PopoverTrigger>
+
+        <PopoverContent className="bg-gray-900 space-y-2">
+          <div className="text-white text-md">Title</div>
+          <Input
+            className="bg-gray-600 text-white"
+            onChange={(e) => {
+              setInputData(e.target.value);
+            }}
+          />
+          <div className="text-white text-md">
+            Select a color
+            <div className="flex flex-wrap">
+              {Object.entries(darkColors).map(([colorName, colorValue]) => (
+                <div key={colorName}>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div
+                          className="relative w-8 h-8 rounded-full m-2 flex items-center justify-center text-white text-xs cursor-pointer hover:opacity-75"
+                          style={{ backgroundColor: colorValue }}
+                          onClick={() => setSelectedColor(colorName)}
+                        >
+                          {selectedColor === colorName && (
+                            <FaCheck className="absolute text-white" />
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-gray-600 text-white">
+                        {colorName}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Button
+            disabled={selectedColor == ""}
+            onClick={() => {
+              onSubmitNewLabelForm();
+              console.log(inputData);
+            }}
+            className="bg-gray-600 hover:opacity-75 hover:bg-gray-600"
+          >
+            submit
+          </Button>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 

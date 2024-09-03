@@ -107,8 +107,6 @@ export function Members({
     addedMembers[member.id] = true;
   }
 
-  console.log(addedMembers);
-
   const onSubmit = async (
     id: string,
     imageUrl: string,

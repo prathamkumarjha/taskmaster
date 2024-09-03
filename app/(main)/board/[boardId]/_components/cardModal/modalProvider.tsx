@@ -4,6 +4,7 @@ import CardModal from "./cardModal";
 
 const CardModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
   });
