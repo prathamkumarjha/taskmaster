@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import {
   Form,
   FormControl,
@@ -14,11 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useStore } from "@/hooks/use-refetch-data";
 
-export const CheckList = () => {
+export const CheckList = ({ cardId }: { cardId: string }) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const { refresh, setRefresh } = useStore();
 
   const FormSchema = z.object({
     CheckListName: z.string().min(1, {
@@ -51,8 +54,17 @@ export const CheckList = () => {
     };
   }, []);
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data);
+    try {
+      await axios.post(`/api/card/${cardId}/checkList`, {
+        CheckListName: data.CheckListName,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefresh(true);
+    }
   };
   const membersList = (
     <div

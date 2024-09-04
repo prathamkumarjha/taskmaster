@@ -56,6 +56,22 @@ export async function GET(
         where:{
           cardId:cardId
         }
+      },
+      checklists: {
+        select:{
+          checkListId:true,
+          name: true,
+          todos:{
+            select:{
+            todoId:true,
+            name:true,
+            done: true,
+            checkListId:true
+
+            }
+          },
+          cardId: true,
+        }
       }
       },
     });

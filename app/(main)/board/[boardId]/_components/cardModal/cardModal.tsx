@@ -18,6 +18,7 @@ import { AddToCard } from "./AddToCard/AddToCard";
 import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import { Popover } from "@/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import CheckList, { CheckListInterface } from "./checklist";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -45,11 +46,6 @@ const CardModal = () => {
       refetch().then(() => setRefresh(false));
     }
   }, [refresh, refetch, setRefresh]);
-
-  //set refresh to true just in case if this helps router dom to give correct labels
-  useEffect(() => {
-    setRefresh(true);
-  }, []);
 
   const moveCardModalClose = useMoveCardModal().onClose;
   const close = () => {
@@ -117,15 +113,18 @@ const CardModal = () => {
     }
   };
 
+  console.log(cardData);
+  console.log(cardData?.checklists);
+
   return (
     <>
       {isOpen && (
-        <>
+        <div>
           {/* Modal Overlay */}
-          <div className=" inset-0 bg-black/50 z-40" onClick={close} />
+          <div className=" inset-0 bg-black/50 z-40 " onClick={close} />
           {/* Modal Content */}
           <div className=" fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-            <div className="bg-gray-800 text-white w-full max-w-lg h-auto rounded-lg shadow-lg overflow-hidden modal-content mt-24">
+            <div className="bg-gray-800 text-white w-full max-w-lg h-auto rounded-lg shadow-lg overflow-hidden modal-content mt-24 mb-8">
               <div className="p-6">
                 <div className="flex items-center justify-between border-b border-gray-600 pb-4">
                   <div>
@@ -218,6 +217,13 @@ const CardModal = () => {
                     </div>
                     <AddToCard cardId={cardId} members={people} />
                   </div>
+                  {cardData.checklists?.map((checklist: CheckListInterface) => (
+                    <CheckList
+                      key={checklist.checkListId}
+                      checkList={checklist}
+                    />
+                  ))}
+
                   <div className="mt-6">
                     <CommentInput
                       content={comments}
@@ -232,7 +238,7 @@ const CardModal = () => {
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

@@ -22,7 +22,7 @@ export const AddToCard = ({
       <div>Add to card</div>
       <Members cardId={cardId} assigned={members} />
       <Labels cardId={cardId} />
-      <CheckList />
+      <CheckList cardId={cardId} />
       <Dates />
     </div>
   );
