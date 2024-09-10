@@ -113,9 +113,6 @@ const CardModal = () => {
     }
   };
 
-  console.log(cardData);
-  console.log(cardData?.checklists);
-
   return (
     <>
       {isOpen && (
