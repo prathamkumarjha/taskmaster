@@ -22,16 +22,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import axios from "axios";
 const FormSchema = z.object({
-  dob: z.date({
-    required_error: "A date of birth is required.",
+  date: z.date({
+    required_error: "A date is required.",
   }),
 });
+import { useStore } from "@/hooks/use-refetch-data";
 
-const DatePickerForm = () => {};
-
-export const Dates = () => {
+export const Dates = ({
+  cardId,
+  currentDate,
+}: {
+  cardId: string;
+  currentDate?: string;
+}) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +49,25 @@ export const Dates = () => {
     setIsOpen((prev) => !prev);
   };
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {}
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      await axios.put(`/api/card/${cardId}/Date`, { date: data });
+    } catch (error) {
+      console.log("date update failed", error);
+    } finally {
+      setRefresh(true);
+    }
+  };
 
+  const onDelete = async () => {
+    try {
+      await axios.delete(`/api/card/${cardId}/Date`);
+    } catch (error) {
+      console.log("unable to remove date from the card", error);
+    } finally {
+      setRefresh(true);
+    }
+  };
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node;
@@ -64,16 +86,18 @@ export const Dates = () => {
     };
   }, []);
 
+  const { refresh, setRefresh } = useStore();
+
   const datePickerModal = (
     <div
       ref={modalRef}
-      className="absolute space-y-2 bg-gray-800 shadow-lg rounded-lg z-[101] w-80 text-white p-4 shadow-stone-900"
+      className="absolute space-y-2 bg-gray-800 shadow-lg rounded-lg z-[101] w-70 text-white p-4 shadow-stone-900 justify-center"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="dob"
+            name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Dates</FormLabel>
@@ -89,6 +113,8 @@ export const Dates = () => {
                       >
                         {field.value ? (
                           format(field.value, "PPP")
+                        ) : currentDate ? (
+                          currentDate
                         ) : (
                           <span className="text-white">Pick a date</span>
                         )}
@@ -97,13 +123,9 @@ export const Dates = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
-                      className="bg-gray-900 text-white"
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      // disabled={(date) =>
-                      //   date > new Date() || date < new Date("1900-01-01")
-                      // }
                       initialFocus
                     />
                   </PopoverContent>
@@ -114,6 +136,14 @@ export const Dates = () => {
             )}
           />
           <Button type="submit">Submit</Button>
+          <Button
+            type="button"
+            variant="destructive"
+            className="ml-2"
+            onClick={() => onDelete()}
+          >
+            Delete
+          </Button>
         </form>
       </Form>
     </div>

@@ -1,5 +1,5 @@
 "use client";
-
+import { Dates } from "./AddToCard/Dates";
 import { FaTrashAlt } from "react-icons/fa";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -53,18 +53,15 @@ const CardModal = () => {
     onClose();
   };
 
-  // State for description section
   const [descriptionOpen, setDescriptionOpen] = useState(false);
   const descriptionRef = useRef<HTMLDivElement>(null);
 
-  // State for comment section
   const [commentOpen, setCommentOpen] = useState(false);
   const commentRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside for closing description and comment sections
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      const target = event.target as Element; // Assert as Element
+      const target = event.target as Element;
 
       if (descriptionRef.current && !descriptionRef.current.contains(target)) {
         setDescriptionOpen(false);
@@ -89,7 +86,6 @@ const CardModal = () => {
   if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
-  //json for image Animated tootltip
   const people = cardData?.members.map((member: any) => ({
     id: member.member.userId,
     name: member.member.userName,
@@ -104,131 +100,163 @@ const CardModal = () => {
       await axios.delete(`/api/card/${cardId}/label`, {
         data: { id },
       });
-      // Optionally handle success here
     } catch (error) {
       console.error("Error deleting label:", error);
-      // Optionally handle error here
     } finally {
       setRefresh(true);
     }
   };
+
+  // console.log(cardData);
+
+  const formattedDate = cardData?.date
+    ? new Date(cardData.date).toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "No date available";
+
+  console.log(formattedDate);
+  // Expected output: "September 2, 2024"
 
   return (
     <>
       {isOpen && (
         <div>
           {/* Modal Overlay */}
-          <div className=" inset-0 bg-black/50 z-40 " onClick={close} />
+          <div className="inset-0 bg-black/50 z-40" onClick={close} />
+
           {/* Modal Content */}
-          <div className=" fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-            <div className="bg-gray-800 text-white w-full max-w-lg h-auto rounded-lg shadow-lg overflow-hidden modal-content mt-24 mb-8">
-              <div className="p-6">
-                <div className="flex items-center justify-between border-b border-gray-600 pb-4">
-                  <div>
-                    <div className="flex items-center text-white p-0">
-                      <Image
-                        draggable="false"
-                        alt="card svg"
-                        src="/trello.svg"
-                        width={20}
-                        height={20}
-                        className="mr-2"
-                        style={{ filter: "invert(100%)" }}
-                      />
-                      <span className="text-lg font-semibold">
-                        {cardData?.name}
-                      </span>
+          <div className="fixed inset-0 z-50 flex items-center justify-center pb-4 overflow-scroll h-full">
+            <div className="bg-gray-800 text-white w-full max-w-2xl  rounded-lg shadow-lg overflow-scroll modal-content md:w-full h-screen">
+              {/* Scrollable content with full height */}
+              <div className="flex flex-col h-full">
+                <div className="p-6 flex-grow overflow-y-auto">
+                  <div className="flex items-center justify-between border-b border-gray-600 pb-4">
+                    <div>
+                      <div className="flex items-center text-white p-0">
+                        <Image
+                          draggable="false"
+                          alt="card svg"
+                          src="/trello.svg"
+                          width={20}
+                          height={20}
+                          className="mr-2"
+                          style={{ filter: "invert(100%)" }}
+                        />
+                        <span className="text-lg font-semibold">
+                          {cardData?.name}
+                        </span>
+                      </div>
+                      <Button
+                        className="text-blue-400 hover:text-blue-300 h-0 p-2"
+                        variant="link"
+                        onClick={() => MoveCardModal.onOpen()}
+                      >
+                        {cardData?.column.name}
+                      </Button>
                     </div>
-                    <Button
-                      className="text-blue-400 hover:text-blue-300 h-0 p-2"
-                      variant="link"
-                      onClick={() => {
-                        MoveCardModal.onOpen();
-                        console.log("button is clicked", MoveCardModal.onOpen);
-                      }}
-                    >
-                      {cardData?.column.name}
-                    </Button>
                   </div>
-                </div>
 
-                {cardData.colors.length == 0 ? (
-                  <></>
-                ) : (
-                  <div>
-                    Labels
-                    <div className="h-20 border-2 border-gray-900 shadow-inner  shadow-black">
-                      <ScrollArea className="h-full flex items-center justify-center">
-                        <div className="flex space-x-2 mt-4  px-2">
-                          {cardData.colors.map((color: any) => (
-                            <div key={color.id}>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    // key={color.id}
-
-                                    className={`h-8 min-w-20 rounded-lg bg-${color.color} hover:bg-${color.color} hover:opacity-70 flex justify-center items-center overflow-hidden p-2 cursor-pointer`}
-                                  >
-                                    <span className="truncate">
+                  {cardData.colors.length === 0 ? null : (
+                    <div>
+                      Labels
+                      <div className="h-20 border-2 border-gray-900 shadow-inner shadow-black">
+                        <ScrollArea className="h-full flex items-center justify-center">
+                          <div className="flex space-x-2 mt-4 px-2">
+                            {cardData.colors.map((color: any) => (
+                              <div key={color.id}>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      className={`h-8 min-w-20 rounded-lg bg-${color.color} hover:bg-${color.color} hover:opacity-70 flex justify-center items-center overflow-hidden p-2 cursor-pointer`}
+                                    >
+                                      <span className="truncate">
+                                        {color.name}
+                                      </span>
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="bg-gray-900 p-4 z-[110] rounded-lg shadow-md space-y-2">
+                                    <div className="text-lg flex justify-center">
                                       {color.name}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="bg-gray-900 p-4 z-[110] rounded-lg shadow-md space-y-2 ">
-                                  <div className="text-lg flex justify-center">
-                                    {color.name}
-                                  </div>
-                                  <Button
-                                    variant="destructive"
-                                    onClick={() => onDelete(color.id)}
-                                  >
-                                    <FaTrashAlt className="text-white mr-2" />
-                                    Delete
-                                  </Button>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                          ))}
-                          <ScrollBar orientation="horizontal" />
+                                    </div>
+                                    <Button
+                                      variant="destructive"
+                                      onClick={() => onDelete(color.id)}
+                                    >
+                                      <FaTrashAlt className="text-white mr-2" />
+                                      Delete
+                                    </Button>
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            ))}
+                            <ScrollBar orientation="horizontal" />
+                          </div>
+                        </ScrollArea>
+                      </div>
+                    </div>
+                  )}
+
+                  <MoveCardModalProvider cardData={cardData} />
+
+                  <div className="mt-4">
+                    <div className="flex space-x-4">
+                      <div className="space-y-2">
+                        Members
+                        <div className="flex flex-row items-center ml-4 w-full">
+                          <AnimatedTooltip items={people} />
                         </div>
-                      </ScrollArea>
+                      </div>
+                      {cardData?.date ? (
+                        <div className="flex items-center mt-2">
+                          <div className=" p-4  bg-gray-500 hover:opacity-75 rounded-lg shadow-md text-white font-semibold">
+                            {formattedDate}
+                          </div>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
-                  </div>
-                )}
-
-                <MoveCardModalProvider cardData={cardData} />
-                <div className="mt-4">
-                  <div className="space-y-2">
-                    Members
-                    <div className="flex flex-row items-center ml-4  w-full">
-                      <AnimatedTooltip items={people} />
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-4">
-                    <div className="w-full">
-                      <CardDescription
-                        description={cardData?.description || ""}
+                    <div className="flex space-x-4">
+                      <div className="w-full">
+                        <CardDescription
+                          description={cardData?.description || ""}
+                          cardId={cardId}
+                        />
+                      </div>
+                      <AddToCard
                         cardId={cardId}
+                        members={people}
+                        date={formattedDate}
                       />
                     </div>
-                    <AddToCard cardId={cardId} members={people} />
-                  </div>
-                  {cardData.checklists?.map((checklist: CheckListInterface) => (
-                    <CheckList
-                      key={checklist.checkListId}
-                      checkList={checklist}
-                    />
-                  ))}
 
-                  <div className="mt-6">
-                    <CommentInput
-                      content={comments}
-                      cardId={cardId}
-                      commentId=""
-                    />
-                    <div className="overflow-y-auto max-h-80 mt-4">
-                      <CommentsList content={comments} />
+                    {cardData.checkList?.length === 0 ? (
+                      ""
+                    ) : (
+                      <div className="ml-4">
+                        {cardData.checklists?.map(
+                          (checklist: CheckListInterface) => (
+                            <CheckList
+                              key={checklist.checkListId}
+                              checkList={checklist}
+                            />
+                          )
+                        )}
+                      </div>
+                    )}
+
+                    <div className="mt-6">
+                      <CommentInput
+                        content={comments}
+                        cardId={cardId}
+                        commentId=""
+                      />
+                      <div className="overflow-y-auto max-h-80 mt-4">
+                        <CommentsList content={comments} />
+                      </div>
                     </div>
                   </div>
                 </div>

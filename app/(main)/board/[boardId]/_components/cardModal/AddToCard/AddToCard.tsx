@@ -13,9 +13,11 @@ export interface memberInterface {
 export const AddToCard = ({
   cardId,
   members,
+  date,
 }: {
   cardId: string;
   members: memberInterface[];
+  date?: string;
 }) => {
   return (
     <div className="ml-0 mt-4 pt-8">
@@ -23,7 +25,7 @@ export const AddToCard = ({
       <Members cardId={cardId} assigned={members} />
       <Labels cardId={cardId} />
       <CheckList cardId={cardId} />
-      <Dates />
+      <Dates cardId={cardId} currentDate={date} />
     </div>
   );
 };

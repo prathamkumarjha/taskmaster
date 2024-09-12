@@ -90,12 +90,27 @@ const CheckList: React.FC<{ checkList: CheckListInterface }> = ({
       setRefresh(true);
     }
   };
+
+  const deleteCheckListItem = async (todoId: string) => {
+    try {
+      await axios.delete(`/api/card/${checkList.cardId}/checkListItem`, {
+        params: {
+          todoId,
+        },
+      });
+    } catch (error) {
+      console.log("cant delete", error);
+    } finally {
+      setRefresh(true);
+    }
+  };
+
   return (
-    <div className="mb-4">
-      <div className="relative flex items-center  space-x-2 w-80 mb-2">
+    <div className="mb-4 border-y  p-2 border-gray-500 rounded-lg w-80">
+      <div className="relative flex items-center w-80 mb-2">
         <IoMdCheckboxOutline />
         {isChangeListname ? (
-          <div className="space-x-2 space-y-2">
+          <div className="space-x-2 space-y-2 ml-2">
             <Input
               className=" bg-gray-600"
               value={listName}
@@ -128,7 +143,7 @@ const CheckList: React.FC<{ checkList: CheckListInterface }> = ({
             </Button>
             <Button
               variant="destructive"
-              className="absolute right-0 bg-gray-600 hover:bg-gray-600 hover:opacity-75 text-red-500"
+              className="absolute right-0 bg-gray-600 hover:bg-gray-600 hover:opacity-75 text-red-500 pr-2 mr-3"
               onClick={() => onDeleteName()}
             >
               Delete
@@ -137,23 +152,36 @@ const CheckList: React.FC<{ checkList: CheckListInterface }> = ({
         )}
       </div>
       {checkList.todos.map((todo) => (
-        <div key={todo.todoId}>
-          <input
-            type="checkbox"
-            id={`todo-${todo.todoId}`}
-            checked={todo.done}
-            onChange={() => handleCheckboxChange(todo.todoId, !todo.done)}
-            className="form-checkbox h-4 w-4 text-blue-600"
-            aria-label={`Mark ${todo.name} as done`}
-          />
-          <label htmlFor={`todo-${todo.todoId}`} className="ml-2">
-            {todo.name}
-          </label>
+        <div key={todo.todoId} className="flex justify-between">
+          <div className="flex items-center ml-4">
+            <input
+              type="checkbox"
+              id={`todo-${todo.todoId}`}
+              checked={todo.done}
+              onChange={() => handleCheckboxChange(todo.todoId, !todo.done)}
+              className="form-checkbox h-4 w-4 text-blue-600"
+              aria-label={`Mark ${todo.name} as done`}
+            />
+            <label htmlFor={`todo-${todo.todoId}`} className={`ml-2`}>
+              <p
+                className={`${todo.done ? "line-through" : ""} cursor-pointer`}
+              >
+                {todo.name}
+              </p>
+            </label>
+          </div>
+          <Button
+            variant="link"
+            className=" text-red-500 p-2 "
+            onClick={() => deleteCheckListItem(todo.todoId)}
+          >
+            Delete
+          </Button>
         </div>
       ))}
       <Popover>
         <PopoverTrigger>
-          <Button className="bg-gray-600 hover:bg-gray-600 hover:opacity-75">
+          <Button className="bg-gray-600 hover:bg-gray-600 hover:opacity-75 mt-2">
             Add an Item
           </Button>
         </PopoverTrigger>
