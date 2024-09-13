@@ -351,7 +351,7 @@ export const Labels = ({ cardId }: { cardId: string }) => {
   return (
     <div>
       <Button
-        className="bg-gray-600 text-md mt-2 pt-0 pb-0"
+        className="bg-gray-600 text-md mt-2 pt-0 pb-0 w-full"
         onClick={() => {
           setIsOpen(!isOpen);
         }}

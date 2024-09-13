@@ -205,10 +205,10 @@ export function Members({
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit((values) => {
-                  const id = member.id;
-                  const designation = values.userDesignation;
-                  const name = member.name;
-                  const imageUrl = member.imageUrl;
+                  const id: string = member.id;
+                  const designation: string = values.userDesignation;
+                  const name: string = member.name;
+                  const imageUrl: string = member.imageUrl;
                   onSubmit(id, imageUrl, name, designation);
                 })}
                 className="space-y-8"
@@ -253,7 +253,7 @@ export function Members({
   return (
     <div>
       <Button
-        className="bg-gray-600 text-md mt-2"
+        className="bg-gray-600 text-md mt-2 w-full"
         onClick={handleButtonClick}
         ref={buttonRef}
       >

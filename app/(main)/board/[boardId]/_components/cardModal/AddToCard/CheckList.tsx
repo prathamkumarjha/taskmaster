@@ -105,7 +105,7 @@ export const CheckList = ({ cardId }: { cardId: string }) => {
     <div>
       <Button
         ref={buttonRef}
-        className="bg-gray-600 text-md mt-2"
+        className="bg-gray-600 text-md mt-2 w-full"
         onClick={() => setIsOpen(!isOpen)}
       >
         <IoMdCheckboxOutline className="mr-1" />

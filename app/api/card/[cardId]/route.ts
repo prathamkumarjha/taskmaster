@@ -90,3 +90,42 @@ export async function GET(
     });
   }
 }
+
+
+
+
+export async function DELETE(req: Request, { params }: { params: { cardId: string } }) {
+  const { userId, orgId } = auth();
+
+  // Check for authentication
+  if (!userId) {
+    return new NextResponse("Unauthenticated", { status: 401 });
+  }
+
+  // Check for authorization
+  if (!orgId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const { cardId } = params;
+
+  // Ensure cardId is provided
+  if (!cardId) {
+    return new NextResponse("Card ID is required", { status: 400 });
+  }
+
+
+  // Proceed with deletion
+  try {
+    const deletedData = await prismadb.card.delete({
+      where: {
+       id: cardId
+      },
+    });
+    
+    return NextResponse.json(deletedData, {status:200})
+      } catch (error) {
+    console.error("Failed to remove member:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}

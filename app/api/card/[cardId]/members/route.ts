@@ -92,7 +92,6 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
       },
     });
     
-    console.log("Deleted data:", deletedData);
     return NextResponse.json(deletedData, {status:200})
       } catch (error) {
     console.error("Failed to remove member:", error);

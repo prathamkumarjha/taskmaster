@@ -19,7 +19,7 @@ import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import { Popover } from "@/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import CheckList, { CheckListInterface } from "./checklist";
-
+import Actions from "./Actions/Actions";
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
   const MoveCardModal = useMoveCardModal();
@@ -84,7 +84,7 @@ const CardModal = () => {
   }, [close]);
 
   if (isLoading) return null;
-  if (isError) return <div>Error loading card data</div>;
+  // if (isError) return <div>Error loading card data</div>;
 
   const people = cardData?.members.map((member: any) => ({
     id: member.member.userId,
@@ -107,7 +107,7 @@ const CardModal = () => {
     }
   };
 
-  // console.log(cardData);
+  console.log(cardData);
 
   const formattedDate = cardData?.date
     ? new Date(cardData.date).toLocaleString("en-US", {
@@ -226,11 +226,18 @@ const CardModal = () => {
                           cardId={cardId}
                         />
                       </div>
-                      <AddToCard
-                        cardId={cardId}
-                        members={people}
-                        date={formattedDate}
-                      />
+                      <div>
+                        <AddToCard
+                          cardId={cardId}
+                          members={people}
+                          date={formattedDate}
+                        />
+                        <Actions
+                          cardId={cardData.id}
+                          columnId={cardData.columnId}
+                          boardId={cardData.column.boardId}
+                        />
+                      </div>
                     </div>
 
                     {cardData.checkList?.length === 0 ? (

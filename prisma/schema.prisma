@@ -92,7 +92,7 @@ model cardMember {
 model colorOnCard {
   id     String  @id @default(uuid())
   cardId String
-  card   card    @relation(fields: [cardId], references: [id])
+  card   card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
   color  String
   name   String?
 

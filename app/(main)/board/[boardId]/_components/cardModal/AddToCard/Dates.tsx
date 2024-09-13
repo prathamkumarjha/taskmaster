@@ -152,7 +152,7 @@ export const Dates = ({
     <div className="space-y-2">
       <Button
         ref={buttonRef}
-        className="bg-gray-600 text-md mt-2"
+        className="bg-gray-600 text-md mt-2 w-full"
         onClick={handleButtonClick}
       >
         <CiClock2 className="mr-1  text-lg" />
