@@ -129,3 +129,42 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
+
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { cardId: string } }
+) {
+  const { userId, orgId } = auth();
+
+  if (!userId || !orgId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const { cardId } = params;
+
+  if (!cardId) {
+    return new NextResponse("ID of the card is required", { status: 400 });
+  }
+
+  const body = await req.json();
+  const {name}:{name:string} = body;
+
+  try {
+    const cardData = await prismadb.card.update
+    ({
+      where: { id: cardId },
+     data:{
+      name:name
+     }
+    });
+
+    return NextResponse.json(cardData);
+  } catch (error) {
+    console.error(error);
+    return new NextResponse("An error occurred while fetching the card data", {
+      status: 500,
+    });
+  }
+}
+

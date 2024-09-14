@@ -26,58 +26,56 @@ export default function Nav() {
   }, [organizationId, router]);
 
   return (
-    <nav>
-      <div className="mx-auto bg-custom-blue sticky top-0 z-10 text-black ">
-        <div className="flex justify-between h-16 px-4">
-          <div className="md:hidden flex">
-            <Mobile />
-            <div className="mt-4 mr-0 text-black">
-              <Button
-                variant="outline"
-                onClick={boardModal.onOpen}
-                className="text-black"
-              >
+    <div className="mx-auto  sticky top-0 z-10 text-black ">
+      <div className="flex justify-between h-16 px-4">
+        <div className="md:hidden flex">
+          <Mobile />
+          <div className="mt-4 mr-0 text-black">
+            <Button
+              variant="outline"
+              onClick={boardModal.onOpen}
+              className="text-black"
+            >
+              Create
+            </Button>
+          </div>
+        </div>
+        <div className="hidden  md:block mr-4">
+          <div className="flex mt-3">
+            <Image
+              src="/logo.png"
+              height={50}
+              width={40}
+              alt="Illustration of a person organizing tasks"
+            />
+            <span className="text-white text-xl font-bold ml-3 mt-1 ">
+              TaskMaster
+            </span>
+            <div className="ml-4">
+              <Button variant="outline" onClick={boardModal.onOpen}>
                 Create
               </Button>
             </div>
           </div>
-          <div className="hidden  md:block mr-4">
-            <div className="flex mt-3">
-              <Image
-                src="/logo.png"
-                height={50}
-                width={40}
-                alt="Illustration of a person organizing tasks"
-              />
-              <span className="text-white text-xl font-bold ml-3 mt-1 ">
-                TaskMaster
-              </span>
-              <div className="ml-4">
-                <Button variant="outline" onClick={boardModal.onOpen}>
-                  Create
-                </Button>
-              </div>
-            </div>
-          </div>
+        </div>
 
-          <div className="pt-4 flex">
-            <div className="mr-4">
-              <OrganizationSwitcher
-                appearance={{
-                  baseTheme: shadesOfPurple,
-                }}
-                hidePersonal={true}
-              />
-            </div>
-            <UserButton
+        <div className="pt-4 flex">
+          <div className="mr-4">
+            <OrganizationSwitcher
               appearance={{
                 baseTheme: shadesOfPurple,
               }}
+              hidePersonal={true}
             />
           </div>
+          <UserButton
+            appearance={{
+              baseTheme: shadesOfPurple,
+            }}
+          />
         </div>
-        <Separator />
       </div>
-    </nav>
+      <Separator />
+    </div>
   );
 }

@@ -19,7 +19,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import Card from "./card";
 import CardModal from "./cardModal/cardModal";
-
+import { CardInterface } from "./columns";
 interface BoardInterface {
   id: string;
   organizationId: string;
@@ -28,13 +28,13 @@ interface BoardInterface {
   favorite: boolean;
 }
 
-interface CardInterface {
-  id: string;
-  columnId: string;
-  name: string;
-  description: string | null;
-  order: number;
-}
+// interface CardInterface {
+//   id: string;
+//   columnId: string;
+//   name: string;
+//   description: string | null;
+//   order: number;
+// }
 
 interface ColumnInterface {
   id: string;
@@ -296,17 +296,19 @@ const Board: React.FC<{
 
   return (
     // overflow-y-hidden
-    <div
-      className="relative h-screen bg-cover bg-center bg-no-repeat  p-4 overflow-scroll"
-      draggable="false"
-      style={{
-        backgroundImage: `url(${BoardData.imageUrl})`,
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    // <div
+    //   className="relative h-screen bg-cover bg-center bg-no-repeat overflow-scroll"
+    //   draggable="false"
+    //   style={{
+    //     backgroundImage: `url(${BoardData.imageUrl})`,
+    //     backgroundSize: "cover",
+    //     backgroundAttachment: "fixed",
+    //   }}
+    // >
+    <div className="mt-16">
       <CardModal />
-      <div className="flex">
+
+      <div className="flex ">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}

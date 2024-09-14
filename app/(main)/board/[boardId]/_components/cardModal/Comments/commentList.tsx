@@ -6,9 +6,5 @@ interface CommentsListInterface {
 }
 
 export const CommentsList: React.FC<CommentsListInterface> = ({ content }) => {
-  return (
-    <div>
-      <Comments content={content} parentId="" />
-    </div>
-  );
+  return <Comments content={content} parentId="" />;
 };

@@ -75,7 +75,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   if (!newList) {
     return (
       <Button
-        className=" bg-white hover:bg-opacity-20 font-semibold py-4 px-4 border-0 rounded flex text-black variant-ghost hover:bg-gray-500"
+        className="bg-white w-full pt-2 text-black hover:bg-white"
         onClick={() => {
           setNewList(true);
         }}
@@ -86,9 +86,15 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   }
 
   return (
-    <div className="mt-4" ref={refOne as RefObject<HTMLDivElement>}>
+    <div
+      className=" rounded-lg bg-white sticky"
+      ref={refOne as RefObject<HTMLDivElement>}
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 mt-4 pb-2"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -103,10 +109,10 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
             )}
           />
           <div className="flex ">
-            <Button type="submit">Add a card</Button>
+            <Button className="hover:bg-opacity-0">Add a card</Button>
             <Button
+              type="submit"
               variant="ghost"
-              className="ml-2  border-black "
               onClick={() => setNewList(false)}
             >
               <HiOutlineX className="h-4 w-4" />

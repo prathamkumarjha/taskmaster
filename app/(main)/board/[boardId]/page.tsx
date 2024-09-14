@@ -18,6 +18,24 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
     },
     include: {
       cards: {
+        include: {
+          colors: true,
+          members: {
+            include: {
+              member: true,
+            },
+          },
+          checklists: {
+            include: {
+              todos: true,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+        },
         orderBy: {
           order: "asc",
         },
@@ -33,10 +51,23 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
   }
 
   return (
-    <div className="h-full">
+    <div>
       {/* <CardModal /> */}
       <BoardModalProvider />
-      <Board BoardData={board} ColumnData={columns} />
+      <div
+        className="relative h-screen bg-cover bg-center bg-no-repeat overflow-scroll"
+        draggable="false"
+        style={{
+          backgroundImage: `url(${board.imageUrl})`,
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        <div className="bg-black bg-opacity-30 h-12 mb-4 w-screen text-4xl pl-4 text-white fixed ">
+          {board.name}
+        </div>
+        <Board BoardData={board} ColumnData={columns} />
+      </div>
     </div>
   );
 };

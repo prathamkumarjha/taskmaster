@@ -20,13 +20,17 @@ import { Popover } from "@/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import CheckList, { CheckListInterface } from "./checklist";
 import Actions from "./Actions/Actions";
+import { RxCross2 } from "react-icons/rx";
+import { useRouter } from "next/navigation";
+import CardModalName from "./cardModalName";
+
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
   const MoveCardModal = useMoveCardModal();
   const cardId = id;
 
   const { refresh, setRefresh } = useStore();
-
+  const router = useRouter();
   const {
     data: cardData,
     isLoading,
@@ -38,12 +42,13 @@ const CardModal = () => {
       const response = await axios.get(`/api/card/${cardId}`);
       return response.data;
     },
-    enabled: !!id,
+    enabled: isOpen && !!id,
   });
 
   useEffect(() => {
     if (refresh) {
       refetch().then(() => setRefresh(false));
+      router.refresh();
     }
   }, [refresh, refetch, setRefresh]);
 
@@ -84,7 +89,7 @@ const CardModal = () => {
   }, [close]);
 
   if (isLoading) return null;
-  // if (isError) return <div>Error loading card data</div>;
+  if (isError) return <div>Error loading card data</div>;
 
   const people = cardData?.members.map((member: any) => ({
     id: member.member.userId,
@@ -117,15 +122,12 @@ const CardModal = () => {
       })
     : "No date available";
 
-  console.log(formattedDate);
-  // Expected output: "September 2, 2024"
-
   return (
     <>
       {isOpen && (
         <div>
           {/* Modal Overlay */}
-          <div className="inset-0 bg-black/50 z-40" onClick={close} />
+          <div className="inset-0 bg-black/50 z-40" onClick={close} w-full />
 
           {/* Modal Content */}
           <div className="fixed inset-0 z-50 flex items-center justify-center pb-4 overflow-scroll h-full">
@@ -146,7 +148,11 @@ const CardModal = () => {
                           style={{ filter: "invert(100%)" }}
                         />
                         <span className="text-lg font-semibold">
-                          {cardData?.name}
+                          {/* {cardData?.name} */}
+                          <CardModalName
+                            cardName={cardData?.name}
+                            id={cardData.id}
+                          />
                         </span>
                       </div>
                       <Button
@@ -157,6 +163,10 @@ const CardModal = () => {
                         {cardData?.column.name}
                       </Button>
                     </div>
+                    <RxCross2
+                      className="cursor-pointer"
+                      onClick={() => onClose()}
+                    />
                   </div>
 
                   {cardData.colors.length === 0 ? null : (
@@ -202,7 +212,7 @@ const CardModal = () => {
                   <MoveCardModalProvider cardData={cardData} />
 
                   <div className="mt-4">
-                    <div className="flex space-x-4">
+                    <div className="flex justify-between">
                       <div className="space-y-2">
                         Members
                         <div className="flex flex-row items-center ml-4 w-full">
@@ -219,12 +229,29 @@ const CardModal = () => {
                         ""
                       )}
                     </div>
+
                     <div className="flex space-x-4">
                       <div className="w-full">
-                        <CardDescription
-                          description={cardData?.description || ""}
-                          cardId={cardId}
-                        />
+                        <div className="">
+                          <CardDescription
+                            description={cardData?.description || ""}
+                            cardId={cardId}
+                          />
+                        </div>
+                        {cardData.checkList?.length === 0 ? (
+                          ""
+                        ) : (
+                          <div className=" mt-8">
+                            {cardData.checklists?.map(
+                              (checklist: CheckListInterface) => (
+                                <CheckList
+                                  key={checklist.checkListId}
+                                  checkList={checklist}
+                                />
+                              )
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <AddToCard
@@ -240,28 +267,13 @@ const CardModal = () => {
                       </div>
                     </div>
 
-                    {cardData.checkList?.length === 0 ? (
-                      ""
-                    ) : (
-                      <div className="ml-4">
-                        {cardData.checklists?.map(
-                          (checklist: CheckListInterface) => (
-                            <CheckList
-                              key={checklist.checkListId}
-                              checkList={checklist}
-                            />
-                          )
-                        )}
-                      </div>
-                    )}
-
                     <div className="mt-6">
                       <CommentInput
                         content={comments}
                         cardId={cardId}
                         commentId=""
                       />
-                      <div className="overflow-y-auto max-h-80 mt-4">
+                      <div className=" mt-4">
                         <CommentsList content={comments} />
                       </div>
                     </div>
