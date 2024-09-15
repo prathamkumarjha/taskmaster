@@ -112,8 +112,6 @@ const CardModal = () => {
     }
   };
 
-  console.log(cardData);
-
   const formattedDate = cardData?.date
     ? new Date(cardData.date).toLocaleString("en-US", {
         year: "numeric",

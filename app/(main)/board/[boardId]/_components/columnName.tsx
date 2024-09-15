@@ -108,7 +108,7 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
 
   if (!newName) {
     return (
-      <div className="text-xl flex justify-between w-full sticky top-0 bg-white py-2 z-10  ">
+      <div className="text-xl flex justify-between w-full sticky top-0 bg-white pt-2 z-10  ">
         <Badge
           onClick={handleNameClick}
           variant="secondary"
@@ -142,13 +142,15 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
             >
               Add card...
             </Button>
-            <Button
-              className="w-full px-0"
-              variant="ghost"
-              onClick={() => onDelete()}
-            >
-              Delete this list
-            </Button>
+            <div className="w-full  border-t flex justify-center border-gray-200">
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => onDelete()}
+              >
+                Delete this list
+              </Button>
+            </div>
           </PopoverContent>
         </Popover>
       </div>

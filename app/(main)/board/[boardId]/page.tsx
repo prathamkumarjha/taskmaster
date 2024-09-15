@@ -3,6 +3,7 @@ import Board from "./_components/board";
 import { redirect } from "next/navigation";
 import CardModal from "./_components/cardModal/cardModal";
 import BoardModalProvider from "../../dashboard/_components/board-modal-provider";
+import BoardName from "./_components/boardName";
 
 const boardLayout = async ({ params }: { params: { boardId: string } }) => {
   const id = params.boardId;
@@ -63,9 +64,6 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
           backgroundAttachment: "fixed",
         }}
       >
-        <div className="bg-black bg-opacity-30 h-12 mb-4 w-screen text-4xl pl-4 text-white fixed ">
-          {board.name}
-        </div>
         <Board BoardData={board} ColumnData={columns} />
       </div>
     </div>

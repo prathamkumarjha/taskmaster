@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Card from "./card";
 import CardModal from "./cardModal/cardModal";
 import { CardInterface } from "./columns";
+import BoardName from "./boardName";
 interface BoardInterface {
   id: string;
   organizationId: string;
@@ -114,7 +115,6 @@ const Board: React.FC<{
     const activeColumnIndex = ColumnData.findIndex(
       (column) => column.id === active.data.current?.columnId
     );
-    console.log("active column id", active.data.current?.columnId);
 
     const overColumnIndex = ColumnData.findIndex(
       (column) => column.id === over.data.current?.columnId
@@ -139,7 +139,7 @@ const Board: React.FC<{
             // Remove the active card from its original column
             col.cards = col.cards.filter((card) => card.id !== active.id);
           }
-          console.log(col);
+
           return col;
         });
         return updatedColumns;
@@ -307,8 +307,10 @@ const Board: React.FC<{
     // >
     <div className="mt-16">
       <CardModal />
-
-      <div className="flex ">
+      <div className="bg-black bg-opacity-30 h-16  w-screen text-4xl pl-4 text-white fixed top-16 flex items-center">
+        <BoardName BoardName={BoardData.name} id={BoardData.id} />
+      </div>
+      <div className="flex mt-4">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
@@ -316,7 +318,7 @@ const Board: React.FC<{
           onDragOver={onDragOver}
         >
           <SortableContext items={items}>
-            <div className="flex flex-row-reverse">
+            <div className="flex flex-row-reverse mt-4">
               {items.map((col) => (
                 <Column key={col.id} ColumnData={col} />
               ))}
