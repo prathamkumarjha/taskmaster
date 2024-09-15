@@ -25,13 +25,13 @@ const formSchema = z.object({
     .max(100, { message: "name is too long" }),
   columnId: z.string().min(1),
 });
-
+import { useNewCardModal } from "@/hooks/use-newCard-name";
 interface NewListButtonInterface {
   columnId: string;
 }
 
 const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
-  const [newList, setNewList] = useState(false);
+  const { isOpen, onOpen, onClose } = useNewCardModal();
   const refOne = useRef<HTMLDivElement | null>(null);
 
   const params = useParams<{ boardId: string }>();
@@ -44,7 +44,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
 
   const handleClickOutside = (e: Event) => {
     if (refOne.current && !refOne.current.contains(e.target as Node)) {
-      setNewList(false);
+      onClose();
     }
   };
 
@@ -65,19 +65,19 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
       .post(`/api/newCard/${params.boardId}`, { ...values })
       .then(() => {
         router.refresh();
-        setNewList(false);
+        onClose();
       })
       .catch((error) => {
         console.error("Error creating new list:", error);
       });
   }
 
-  if (!newList) {
+  if (!isOpen) {
     return (
       <Button
         className="bg-white w-full pt-2 text-black hover:bg-white"
         onClick={() => {
-          setNewList(true);
+          onOpen();
         }}
       >
         <FaPlus className="mr-1 text-black " /> Add a Card
@@ -110,11 +110,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
           />
           <div className="flex ">
             <Button className="hover:bg-opacity-0">Add a card</Button>
-            <Button
-              type="submit"
-              variant="ghost"
-              onClick={() => setNewList(false)}
-            >
+            <Button type="submit" variant="ghost" onClick={() => onClose()}>
               <HiOutlineX className="h-4 w-4" />
             </Button>
           </div>

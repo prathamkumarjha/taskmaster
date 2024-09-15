@@ -102,7 +102,7 @@ const Column: React.FC<{
   return (
     <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
       <div className="h-[80vh]">
-        <div className="pt-2 px-2 mx-4 w-[315px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+        <div className=" px-2 mx-4 w-[315px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
           <SortableContext items={ColumnData.cards}>
             <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             <div className="space-y-4 h-full overflow-auto max-h-full mt-4">
