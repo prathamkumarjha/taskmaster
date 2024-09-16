@@ -1,6 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 export async function POST(
   req: Request,
@@ -16,6 +18,7 @@ export async function POST(
 
   const body = await req.json();
   const { id,  userImageUrl, userName, designation } = body;
+  const userData = await clerkClient.users.getUser(userId);
 
   if (!id || !userImageUrl || !userName || !designation) {
     return new NextResponse("User ID and User Name are required", { status: 400 });
@@ -41,6 +44,29 @@ export async function POST(
         memberDesignation: designation
       },
     });
+
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+    await prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.MEMBER,        
+        entityTitle:list?.name!,         
+        userId: userId,                       
+        userImage: member.imageUrl,        
+        userName: member.userName,
+        action: ACTION.JOINED,                
+      },
+    })
 
     return NextResponse.json(cardMemberLink, { status: 201 });
   } catch (error) {
@@ -83,6 +109,11 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
 
   // Proceed with deletion
   try {
+    const member = await prismadb.members.findUnique({
+      where:{
+        userId: memberId
+      }
+    })
     const deletedData = await prismadb.cardMember.delete({
       where: {
         cardId_memberId: {
@@ -91,6 +122,32 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
         },
       },
     });
+
+    const userData = await clerkClient.users.getUser(userId);
+
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+    await prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.MEMBER,        
+        entityTitle:list?.name!,         
+        userId: member?.userId!,                       
+        userImage: member?.imageUrl!,        
+        userName: member?.userName!,
+        action: ACTION.LEFT,                
+      },
+    })
+
     
     return NextResponse.json(deletedData, {status:200})
       } catch (error) {

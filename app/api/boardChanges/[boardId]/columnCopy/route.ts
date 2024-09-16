@@ -41,13 +41,13 @@ export async function POST(
         boardId: params.boardId,
       },
     });
-
+  
     // Create the new list (a copy)
     const list = await prismadb.list.create({
       data: {
         boardId: params.boardId,
         name: oldList.name + "-copy",
-        order: columnCount + 1,
+        order: columnCount===1?2:columnCount + 1,
       },
     });
 

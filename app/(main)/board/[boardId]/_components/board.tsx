@@ -307,7 +307,7 @@ const Board: React.FC<{
     // >
     <div className="mt-16">
       <CardModal />
-      <div className="bg-black bg-opacity-30 h-16  w-screen text-4xl pl-4 text-white fixed top-16 flex items-center">
+      <div className="bg-black bg-opacity-75 h-16  w-screen text-4xl pl-4 text-white fixed top-16 flex items-center">
         <BoardName BoardName={BoardData.name} id={BoardData.id} />
       </div>
       <div className="flex mt-4">

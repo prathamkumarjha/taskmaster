@@ -9,9 +9,9 @@ const BoardModalProvider = () => {
   }, []);
   if (!isMounted) {
     return;
+  } else {
+    return <BoardModal />;
   }
-
-  return <BoardModal />;
 };
 
 export default BoardModalProvider;

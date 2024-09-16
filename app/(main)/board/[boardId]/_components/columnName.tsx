@@ -28,7 +28,7 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
   const [name, setName] = useState(listName);
   const [newName, setNewName] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isOpen, onOpen, onClose } = useNewCardModal();
+  const { isOpen, onOpen, onClose, setColumn } = useNewCardModal();
   const oldName = listName;
   const router = useRouter();
   useEffect(() => {
@@ -138,7 +138,10 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
             <Button
               className="w-full px-0"
               variant="ghost"
-              onClick={() => onOpen()}
+              onClick={() => {
+                setColumn(id as string);
+                onOpen();
+              }}
             >
               Add card...
             </Button>

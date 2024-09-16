@@ -79,14 +79,13 @@ const CheckList: React.FC<{ checkList: CheckListInterface }> = ({
 
   const handleCheckboxChange = async (todoId: string, checked: boolean) => {
     try {
-      axios.put(`/api/card/${checkList.cardId}/checkListItem`, {
+      await axios.put(`/api/card/${checkList.cardId}/checkListItem`, {
         todoId,
         checked,
       });
     } catch (error) {
       console.log("checkListItem update failed", error);
     } finally {
-      console.log("checkList item update completed");
       setRefresh(true);
     }
   };

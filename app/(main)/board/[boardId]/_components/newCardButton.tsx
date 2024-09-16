@@ -31,7 +31,8 @@ interface NewListButtonInterface {
 }
 
 const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
-  const { isOpen, onOpen, onClose } = useNewCardModal();
+  const { isOpen, onOpen, onClose, setColumn, activeColumn } =
+    useNewCardModal();
   const refOne = useRef<HTMLDivElement | null>(null);
 
   const params = useParams<{ boardId: string }>();
@@ -65,6 +66,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
       .post(`/api/newCard/${params.boardId}`, { ...values })
       .then(() => {
         router.refresh();
+        setColumn("");
         onClose();
       })
       .catch((error) => {
@@ -72,11 +74,12 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
       });
   }
 
-  if (!isOpen) {
+  if (!isOpen || !(activeColumn === columnId)) {
     return (
       <Button
         className="bg-white w-full pt-2 text-black hover:bg-white"
         onClick={() => {
+          setColumn(columnId);
           onOpen();
         }}
       >

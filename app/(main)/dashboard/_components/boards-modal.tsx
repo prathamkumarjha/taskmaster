@@ -54,8 +54,8 @@ export const BoardModal = () => {
   });
   const { toast } = useToast();
   const [disabled, setDisabled] = useState(false);
-
   const [isMounted, setIsMounted] = useState(false);
+  const { isOpen, onOpen, onClose } = useBoardModal();
 
   useEffect(() => {
     setIsMounted(true);
@@ -76,10 +76,11 @@ export const BoardModal = () => {
   };
 
   //sending new boards data to the backend
-  const onSubmit: SubmitHandler<FormData> = (formData) => {
+  let data: any;
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
       setDisabled(true);
-      axios.post(`/api/${organizationId}/newBoard`, formData);
+      data = await axios.post(`/api/${organizationId}/newBoard`, formData);
     } catch (error) {
       console.log("an error occured while creating the new board", error);
       toast({
@@ -91,7 +92,9 @@ export const BoardModal = () => {
       toast({
         description: "new board created",
       });
-      router.refresh;
+      console.log(data?.data?.id);
+      router.push(`/board/${data.data.id}`);
+      onClose();
     }
   };
 

@@ -1,33 +1,61 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 export async function POST(
-  req: Request,
+  req: Request, 
   { params }: { params: { cardId: string } }
 ) {
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) return new NextResponse("Unauthorized", { status: 401 });
-
+  const userData = await clerkClient.users.getUser(userId);
   const { cardId } = params;
 
   if (!cardId) return new NextResponse("Card ID is required", { status: 400 });
 
   const body = await req.json();
-  console.log(body);
+
   const {  CheckListName } = body;
 
   try {
+
+  const list = await prismadb.card.findUnique({
+    where:{
+     
+        id:cardId
+      },
+include:{
+  column:true
+}
+    }
+  )
+
     const newCheckList = await prismadb.checklist.create({
       data: {
         cardId: cardId,
         name: CheckListName,
       },
     });
+
+    await prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.CHECKLIST,        
+        entityTitle: CheckListName,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.CREATE,                
+      },
+    })
+
     return NextResponse.json(newCheckList, { status: 201 });
   } catch (error) {
-    console.error("Error adding label to card:", error);
+    console.error("Error adding checkList  to card:", error);
     return new NextResponse("Failed to add label to card", { status: 500 });
   }
 }

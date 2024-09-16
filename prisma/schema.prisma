@@ -118,3 +118,39 @@ model todo {
 
   @@index([checkListId])
 }
+
+enum ACTION {
+  CREATE
+  UPDATE
+  DELETE
+  MOVE
+  MARK
+  UNMARK
+  COMMENT
+  JOINED
+  LEFT
+}
+
+enum ENTITY_TYPE {
+  BOARD
+  LIST
+  CARD
+  CHECKLIST
+  TODO
+  LABEL
+  DATE
+  MEMBER
+}
+
+model audit_log {
+  id          String      @id @default(uuid())
+  boardId     String
+  cardId      String?
+  entityType  ENTITY_TYPE
+  entityTitle String
+  userId      String
+  userImage   String      @db.Text
+  userName    String      @db.Text
+  action      ACTION
+  createdAt   DateTime    @default(now())
+}
