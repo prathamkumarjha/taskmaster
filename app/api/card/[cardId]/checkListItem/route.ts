@@ -43,7 +43,7 @@ export async function POST (req:Request, {params}:{params:{cardId:string}}) {
           
 
             
-          await prismadb.audit_log.create({
+        await prismadb.audit_log.create({
             data: {
               boardId: list?.column.boardId!,             
               cardId: params.cardId,                         
@@ -115,7 +115,7 @@ export async function PUT(req:Request, {params}:{params:{cardId:string}}){
           })
 
           
-          await prismadb.audit_log.create({
+      await    prismadb.audit_log.create({
             data: {
               boardId: list?.column.boardId!,             
               cardId: params.cardId,                         
@@ -187,7 +187,7 @@ export async function DELETE(
   
 
         
-      await prismadb.audit_log.create({
+       prismadb.audit_log.create({
         data: {
           boardId: list?.column.boardId!,             
           cardId: params.cardId,                         

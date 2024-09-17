@@ -11,17 +11,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Log } from "./board";
+import BoardActivity from "./boardActivity";
 interface BoardNameProps {
   BoardName: string;
   id: string;
+  logs: Log[];
 }
 
 const formSchema = z.object({
   listName: z.string().min(1).max(50),
 });
 
-const BoardName: React.FC<BoardNameProps> = ({ BoardName, id }) => {
+const BoardName: React.FC<BoardNameProps> = ({ BoardName, id, logs }) => {
   const [name, setName] = useState(BoardName);
   const inputRef = useRef<HTMLInputElement>(null);
   const oldName = BoardName;
@@ -107,6 +117,16 @@ const BoardName: React.FC<BoardNameProps> = ({ BoardName, id }) => {
           >
             Delete Board
           </Button>
+          <Sheet>
+            <SheetTrigger className="w-full">
+              <Button className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 ">
+                Board Activity
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="bg-black border-black bg-opacity-50 text-white overflow-auto">
+              <BoardActivity logs={logs} />
+            </SheetContent>
+          </Sheet>
         </PopoverContent>
       </Popover>
     </div>

@@ -29,7 +29,6 @@ const Card: React.FC<CardInterface> = (cardData: CardInterface) => {
     transition,
   };
 
-  console.log(cardData);
   // Flatten all todos from the checklists into one array
   const todos = cardData.checklists.flatMap((checklist) => checklist.todos);
 

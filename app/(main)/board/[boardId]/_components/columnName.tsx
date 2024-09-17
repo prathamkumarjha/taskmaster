@@ -53,7 +53,6 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
   };
   const params = useParams();
   const handleSaveName = () => {
-    console.log("New name:", name);
     if (oldName === name) {
       setNewName(false);
       return;
@@ -93,7 +92,6 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
     }
   };
 
-  console.log("boardId is", params.boardId);
   const onCopy = async () => {
     try {
       await axios.post(`/api/boardChanges/${params.boardId}/columnCopy`, {

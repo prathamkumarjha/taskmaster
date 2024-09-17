@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import axios from "axios";
-import { useParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 

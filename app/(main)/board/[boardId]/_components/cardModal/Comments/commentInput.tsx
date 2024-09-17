@@ -47,15 +47,12 @@ const CommentInput: React.FC<cardCommentInterface> = ({
     };
   }, []);
   return (
-    <div className="space-y-4 pt-4">
+    <div className="space-y-4">
       <div
         ref={commentRef}
         onClick={() => setCommentOpen(true)}
         className="cursor-pointer mt-4"
       >
-        <div className="flex space-x-2 items-center">
-          <BiAlignMiddle /> <h1>Comments</h1>
-        </div>
         <div ref={commentRef}>
           {commentOpen ? (
             <TextEditor data="" type="comment" cardId={cardId} />

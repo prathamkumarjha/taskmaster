@@ -135,7 +135,7 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
   }
       }
     )
-    await prismadb.audit_log.create({
+  await   prismadb.audit_log.create({
       data: {
         boardId: list?.column.boardId!,             
         cardId: cardId,                         

@@ -21,6 +21,7 @@ import Card from "./card";
 import CardModal from "./cardModal/cardModal";
 import { CardInterface } from "./columns";
 import BoardName from "./boardName";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 interface BoardInterface {
   id: string;
   organizationId: string;
@@ -45,10 +46,24 @@ interface ColumnInterface {
   cards: CardInterface[];
 }
 
+export interface Log {
+  id: string;
+  boardId: string;
+  cardId: string | null;
+  entityType: ENTITY_TYPE;
+  entityTitle: string;
+  userId: string;
+  userImage: string;
+  userName: string;
+  action: ACTION;
+  createdAt: Date;
+}
+
 const Board: React.FC<{
   BoardData: BoardInterface;
   ColumnData: ColumnInterface[];
-}> = ({ BoardData, ColumnData }) => {
+  logs: Log[];
+}> = ({ BoardData, ColumnData, logs }) => {
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -71,7 +86,7 @@ const Board: React.FC<{
   const [activeCard, setActiveCard] = useState<CardInterface | null>(null);
 
   const router = useRouter();
-
+  console.log(logs);
   useEffect(() => {
     setItems([...ColumnData]);
   }, [ColumnData]);
@@ -308,7 +323,7 @@ const Board: React.FC<{
     <div className="mt-16">
       <CardModal />
       <div className="bg-black bg-opacity-75 h-16  w-screen text-4xl pl-4 text-white fixed top-16 flex items-center">
-        <BoardName BoardName={BoardData.name} id={BoardData.id} />
+        <BoardName BoardName={BoardData.name} id={BoardData.id} logs={logs} />
       </div>
       <div className="flex mt-4">
         <DndContext

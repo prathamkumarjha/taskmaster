@@ -2,6 +2,8 @@ import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { string } from "zod";
+import { clerkClient } from "@clerk/nextjs";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 export async function GET(
   req: Request,
@@ -13,6 +15,7 @@ export async function GET(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
+
   const { cardId } = params;
 
   if (!cardId) {
@@ -20,7 +23,7 @@ export async function GET(
   }
 
   try {
-    const cardData = await prismadb.card.findUnique({
+    const data = await prismadb.card.findUnique({
       where: { id: cardId },
       include: {
         comments: {
@@ -72,15 +75,29 @@ export async function GET(
           },
           cardId: true,
         }
-      }
+      },
       },
     });
 
-    if (!cardData || cardData.column.board.organizationId !== orgId) {
+    if (!data || data.column.board.organizationId !== orgId) {
       return new NextResponse("Card not found or unauthorized", {
         status: 404,
       });
     }
+
+const logs = await prismadb.audit_log.findMany(
+  {
+    where:{
+      cardId:cardId
+    },
+    orderBy:{
+      createdAt: "desc"
+    }
+  }
+)
+
+const cardData = {...data,logs}
+
 
     return NextResponse.json(cardData);
   } catch (error) {
@@ -106,7 +123,7 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
   if (!orgId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
-
+  const userData = await clerkClient.users.getUser(userId);
   const { cardId } = params;
 
   // Ensure cardId is provided
@@ -123,6 +140,29 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
       },
     });
     
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+   await  prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.CARD,        
+        entityTitle: list?.name!,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.DELETE,                
+      },
+    })
     return NextResponse.json(deletedData, {status:200})
       } catch (error) {
     console.error("Failed to remove member:", error);
@@ -140,7 +180,7 @@ export async function PUT(
   if (!userId || !orgId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
-
+  const userData = await clerkClient.users.getUser(userId);
   const { cardId } = params;
 
   if (!cardId) {
@@ -158,6 +198,30 @@ export async function PUT(
       name:name
      }
     });
+
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+    await prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.CARD,        
+        entityTitle: name,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.UPDATE,                
+      },
+    })
 
     return NextResponse.json(cardData);
   } catch (error) {

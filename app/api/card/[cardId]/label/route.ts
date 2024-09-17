@@ -1,6 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 export async function POST(
   req: Request,
@@ -15,9 +17,9 @@ export async function POST(
   if (!cardId) return new NextResponse("Card ID is required", { status: 400 });
 
   const body = await req.json();
-  console.log(body);
+ 
   const {  labelName, selectedColor, color } = body;
-
+  const userData = await clerkClient.users.getUser(userId);
  
 
   try {
@@ -43,6 +45,30 @@ export async function POST(
           });
     }
     
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+  await  prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.LABEL,        
+        entityTitle: list?.name!,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.CREATE,                
+      },
+    })
+
 
     return NextResponse.json(newLabel, { status: 201 });
   } catch (error) {
@@ -60,7 +86,7 @@ export async function DELETE(
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) return new NextResponse("Unauthorized", { status: 401 });
-
+  const userData = await clerkClient.users.getUser(userId);
   const { cardId } = params;
 
   if (!cardId) return new NextResponse("Card ID is required", { status: 400 });
@@ -78,6 +104,33 @@ export async function DELETE(
         id: id // Prisma expects the unique identifier for deletion
       }
     });
+
+
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+  await prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.LABEL,        
+        entityTitle: list?.name!,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.DELETE,                
+      },
+    })
+
+
     return NextResponse.json(deleted, { status: 200 });
   } catch (error) {
     console.error("Error deleting label:", error);

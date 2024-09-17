@@ -40,7 +40,7 @@ include:{
       },
     });
 
-    await prismadb.audit_log.create({
+  await prismadb.audit_log.create({
       data: {
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
@@ -73,7 +73,7 @@ export async function PATCH(
   if (!cardId) return new NextResponse("Card ID is required", { status: 400 });
 
   const body = await req.json();
-  console.log("This is coming from patch request", body);
+  
 
   const { checkListName, checkListId } = body;
 
@@ -87,7 +87,7 @@ export async function PATCH(
       },
     });
 
-    console.log(newCheckList);
+    
     return NextResponse.json(newCheckList, { status: 200 });
   } catch (error) {
     console.error("Error updating checklist name:", error);
@@ -103,7 +103,7 @@ export async function DELETE(
   const { userId, orgId } = auth();
 
   if (!userId || !orgId) return new NextResponse("Unauthorized", { status: 401 });
-
+  const userData = await clerkClient.users.getUser(userId);
   const { cardId } = params;
 
   if (!cardId) return new NextResponse("Card ID is required", { status: 400 });
@@ -123,7 +123,30 @@ export async function DELETE(
       },
     });
 
-    console.log(deletedCheckList);
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+  await   prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.CHECKLIST,        
+        entityTitle: deletedCheckList.name,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.DELETE,                
+      },
+    })
+
     return NextResponse.json(deletedCheckList, { status: 200 });
   } catch (error) {
     console.error("Error deleting checklist:", error);

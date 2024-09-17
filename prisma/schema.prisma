@@ -47,7 +47,7 @@ model card {
   members     cardMember[]
   checklists  checklist[]
 
-  @@index([columnId])
+  @@index([columnId, id])
 }
 
 model Comment {

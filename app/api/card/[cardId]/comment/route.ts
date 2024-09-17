@@ -2,6 +2,7 @@ import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { clerkClient } from "@clerk/nextjs";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 export async function POST(req: Request, { params }: { params: { cardId: string } }) {
   const { userId, orgId } = auth();
@@ -46,6 +47,34 @@ export async function POST(req: Request, { params }: { params: { cardId: string 
         parent: parentId ? { connect: { id: parentId } } : undefined
       }
     });
+
+
+    
+  const list = await prismadb.card.findUnique({
+    where:{
+     
+        id:cardId
+      },
+include:{
+  column:true
+}
+    }
+  )
+
+   await prismadb.audit_log.create({
+    data: {
+      boardId: list?.column.boardId!,             
+      cardId: cardId,                         
+      entityType: ENTITY_TYPE.CARD,        
+      entityTitle: "",         
+      userId: userId,                       
+      userImage: userData.imageUrl,        
+      userName: `${userData.firstName} ${userData.lastName}`,
+      action: ACTION.COMMENT,                
+    },
+  })
+
+
     return NextResponse.json(comment);
   } catch (error) {
     console.error("Comment was not added", error);
@@ -76,7 +105,7 @@ export async function GET(req: Request, {params}:{params:{cardId:string}}){
     }
   })
 
-  console.log(comments)
+  
   return NextResponse.json(comments)
 
 }

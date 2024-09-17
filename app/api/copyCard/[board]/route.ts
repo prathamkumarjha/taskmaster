@@ -1,6 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 export async function POST(
   req: Request,
@@ -16,7 +18,7 @@ export async function POST(
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
-
+    const userData = await clerkClient.users.getUser(userId);
     // Validate input: Ensure cardId is provided
     if (!cardId) {
       return new NextResponse("Card ID is required", { status: 404 });
@@ -102,6 +104,29 @@ export async function POST(
       }
     }
 
+    const list = await prismadb.card.findUnique({
+      where:{
+       
+          id:cardId
+        },
+  include:{
+    column:true
+  }
+      }
+    )
+
+   await  prismadb.audit_log.create({
+      data: {
+        boardId: list?.column.boardId!,             
+        cardId: cardId,                         
+        entityType: ENTITY_TYPE.CARD,        
+        entityTitle: newCard.name,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.CREATE,                
+      },
+    })
     return NextResponse.json(newCard);
   } catch (error) {
     console.log("Error copying card:", error);

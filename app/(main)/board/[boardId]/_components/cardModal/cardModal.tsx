@@ -23,6 +23,10 @@ import Actions from "./Actions/Actions";
 import { RxCross2 } from "react-icons/rx";
 import { useRouter } from "next/navigation";
 import CardModalName from "./cardModalName";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BiAlignMiddle } from "react-icons/bi";
+import { FiActivity } from "react-icons/fi";
+import { ActivityLog } from "./activity";
 
 const CardModal = () => {
   const { id, isOpen, onClose } = useCardModal();
@@ -91,7 +95,7 @@ const CardModal = () => {
   if (isLoading) return null;
   if (isError) return <div>Error loading card data</div>;
 
-  const people = cardData?.members.map((member: any) => ({
+  const people = cardData?.members?.map((member: any) => ({
     id: member.member.userId,
     name: member.member.userName,
     designation: member.memberDesignation,
@@ -158,7 +162,7 @@ const CardModal = () => {
                         variant="link"
                         onClick={() => MoveCardModal.onOpen()}
                       >
-                        {cardData?.column.name}
+                        {cardData?.column?.name}
                       </Button>
                     </div>
                     <RxCross2
@@ -265,16 +269,36 @@ const CardModal = () => {
                       </div>
                     </div>
 
-                    <div className="mt-6">
-                      <CommentInput
-                        content={comments}
-                        cardId={cardId}
-                        commentId=""
-                      />
-                      <div className=" mt-4">
-                        <CommentsList content={comments} />
-                      </div>
-                    </div>
+                    <Tabs
+                      defaultValue="Comment"
+                      className=" mt-4 border-t border-gray-600 pt-4"
+                    >
+                      <TabsList className="flex items-center bg-gray-800">
+                        <TabsTrigger
+                          value="Comment"
+                          className="flex  items-center text-lg"
+                        >
+                          <BiAlignMiddle className="mr-2" />
+                          Comment
+                        </TabsTrigger>
+                        <TabsTrigger value="logs" className="text-lg">
+                          <FiActivity className="text-lg mr-2" /> Activity
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="Comment">
+                        <CommentInput
+                          content={comments}
+                          cardId={cardId}
+                          commentId=""
+                        />
+                        <div className=" mt-4">
+                          <CommentsList content={comments} />
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="logs">
+                        <ActivityLog logs={cardData.logs} />
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </div>
               </div>

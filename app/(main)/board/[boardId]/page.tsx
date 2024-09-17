@@ -51,6 +51,15 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
     redirect("/");
   }
 
+  const logs = await prismadb.audit_log.findMany({
+    where: {
+      boardId: id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div>
       {/* <CardModal /> */}
@@ -64,7 +73,7 @@ const boardLayout = async ({ params }: { params: { boardId: string } }) => {
           backgroundAttachment: "fixed",
         }}
       >
-        <Board BoardData={board} ColumnData={columns} />
+        <Board BoardData={board} ColumnData={columns} logs={logs} />
       </div>
     </div>
   );

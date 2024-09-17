@@ -1,7 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
-
+import { clerkClient } from "@clerk/nextjs";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 export async function POST(
   req: Request,
   { params }: { params: { boardId: string } }
@@ -109,6 +110,20 @@ export async function POST(
         ]);
       })
     );
+
+    const userData = await clerkClient.users.getUser(userId);
+  await   prismadb.audit_log.create({
+      data: {
+        boardId: params.boardId,             
+        cardId: null,                         
+        entityType: ENTITY_TYPE.LIST,        
+        entityTitle: list.name,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.CREATE,                
+      },
+    })
 
     return NextResponse.json(list, { status: 201 });
   } catch (error) {

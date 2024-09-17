@@ -1,6 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 export async function POST(
   req: Request,
@@ -17,7 +19,7 @@ export async function POST(
     if (!userId) {
       return new NextResponse("unauthenticated", { status: 401 });
     }
-
+    const userData = await clerkClient.users.getUser(userId);
     if (!name) {
       return new NextResponse("name is required", { status: 400 });
     }
@@ -38,6 +40,18 @@ export async function POST(
       },
     });
 
+    await prismadb.audit_log.create({
+      data: {
+        boardId: params.board,
+        cardId: board.id,
+        entityType: ENTITY_TYPE.CARD,
+        entityTitle: board.name,
+        userId: userId,
+        userImage: userData.imageUrl,
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.CREATE,
+      },
+    });
     return NextResponse.json(board);
   } catch (error) {
     console.log("newBoard_POST", error);

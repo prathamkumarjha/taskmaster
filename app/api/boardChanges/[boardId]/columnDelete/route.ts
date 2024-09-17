@@ -1,6 +1,8 @@
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 export async function DELETE(
   req: Request,
@@ -28,14 +30,34 @@ export async function DELETE(
       return new NextResponse("Board ID is required", { status: 400 });
     }
 
+
+    // Fetch all cards in the column and delete them if necessary
+    await prismadb.card.deleteMany({
+      where: {
+        columnId: columnId,
+      },
+    });
+    
     // Perform the deletion
-    await prismadb.list.delete({
+const deleted = await prismadb.list.delete({
       where: {
         id: columnId,
       },
     });
-
-    return new NextResponse("Column deleted successfully", { status: 200 });
+    const userData = await clerkClient.users.getUser(userId);
+   await prismadb.audit_log.create({
+      data: {
+        boardId:deleted.boardId ,             
+        cardId: null,                         
+        entityType: ENTITY_TYPE.LIST,        
+        entityTitle: deleted.name,         
+        userId: userId,                       
+        userImage: userData.imageUrl,        
+        userName: `${userData.firstName} ${userData.lastName}`,
+        action: ACTION.DELETE,                
+      },
+    })
+    return  NextResponse.json(deleted, { status: 200 });
 
   } catch (error) {
     console.error("Error deleting column:", error);
