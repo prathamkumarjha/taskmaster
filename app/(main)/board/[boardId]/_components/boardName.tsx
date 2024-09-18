@@ -48,7 +48,7 @@ const BoardName: React.FC<BoardNameProps> = ({ BoardName, id, logs }) => {
     return () => {
       document.removeEventListener("click", handleClickOutside, true);
     };
-  }, [name]);
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -107,7 +107,7 @@ const BoardName: React.FC<BoardNameProps> = ({ BoardName, id, logs }) => {
             <BsThreeDotsVertical className="text-lg hover:text-white " />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="px-0 mr-2">
+        <PopoverContent className="px-0 mr-2 ">
           <div className="text-lg flex justify-center border-b w-full border-gray-200">
             Board Actions
           </div>

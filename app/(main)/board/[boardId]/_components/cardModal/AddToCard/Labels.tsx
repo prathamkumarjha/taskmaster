@@ -16,6 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useDisableStore } from "@/hooks/use-button-disable-store";
+
 import axios from "axios";
 import { useStore } from "@/hooks/use-refetch-data";
 import {
@@ -78,6 +80,8 @@ export const Labels = ({ cardId }: { cardId: string }) => {
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [inputData, setInputData] = useState("");
   const { refresh, setRefresh } = useStore();
+  const { isDisabled, setDisabled } = useDisableStore();
+
   // Arrays of colors for different varieties
   const greenColors = [
     "darkOliveGreen",
@@ -144,6 +148,7 @@ export const Labels = ({ cardId }: { cardId: string }) => {
     // ✅ This will be type-safe and validated.
     console.log(values);
     const labelName = values.labelname;
+    setDisabled(true);
     try {
       const del = await axios.post(`/api/card/${cardId}/label`, {
         labelName,
@@ -153,6 +158,7 @@ export const Labels = ({ cardId }: { cardId: string }) => {
     } catch (error) {
       console.log(error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   }
@@ -160,42 +166,39 @@ export const Labels = ({ cardId }: { cardId: string }) => {
   async function onSubmitWithoutName(color: string) {
     try {
       setSelectedColor(color);
-
-      console.log("the color which is going to be added is", selectedColor);
-      const del = await axios.post(`/api/card/${cardId}/label`, {
+      setDisabled(true);
+      await axios.post(`/api/card/${cardId}/label`, {
         selectedColor: color,
       });
-
-      console.log(del);
     } catch (error) {
       console.log(error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   }
 
   async function onSubmitNewLabelForm() {
     try {
-      let response;
-      console.log("selected color is", selectedColor);
+      setDisabled(true);
       if (inputData !== "") {
         // Check if inputData is not empty
 
         const labelName = inputData;
-        response = await axios.post(`/api/card/${cardId}/label`, {
+        axios.post(`/api/card/${cardId}/label`, {
           selectedColor,
           labelName,
         });
       } else {
         // If inputData is empty, only send selectedColor
-        response = await axios.post(`/api/card/${cardId}/label`, {
+        await axios.post(`/api/card/${cardId}/label`, {
           selectedColor,
         });
       }
-      console.log(response);
     } catch (error) {
       console.log(error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   }
@@ -269,6 +272,7 @@ export const Labels = ({ cardId }: { cardId: string }) => {
                 />
                 <div className="space-x-2">
                   <Button
+                    disabled={isDisabled}
                     type="submit"
                     //  onClick={() => onSubmit}
                   >
@@ -334,7 +338,7 @@ export const Labels = ({ cardId }: { cardId: string }) => {
             </div>
           </div>
           <Button
-            disabled={selectedColor == ""}
+            disabled={selectedColor == "" || isDisabled}
             onClick={() => {
               onSubmitNewLabelForm();
               console.log(inputData);

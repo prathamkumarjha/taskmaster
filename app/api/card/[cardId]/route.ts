@@ -89,15 +89,11 @@ const logs = await prismadb.audit_log.findMany(
   {
     where:{
       cardId:cardId
-    },
-    orderBy:{
-      createdAt: "desc"
     }
   }
 )
 
 const cardData = {...data,logs}
-
 
     return NextResponse.json(cardData);
   } catch (error) {
@@ -151,7 +147,7 @@ export async function DELETE(req: Request, { params }: { params: { cardId: strin
       }
     )
 
-   await  prismadb.audit_log.create({
+     prismadb.audit_log.create({
       data: {
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
@@ -210,7 +206,7 @@ export async function PUT(
       }
     )
 
-    await prismadb.audit_log.create({
+     prismadb.audit_log.create({
       data: {
         boardId: list?.column.boardId!,             
         cardId: cardId,                         

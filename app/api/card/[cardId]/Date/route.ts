@@ -3,7 +3,7 @@ import { NextApiResponse } from "next";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { date } from "zod";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient, currentUser } from "@clerk/nextjs";
 import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 export async function PUT(
@@ -15,7 +15,7 @@ export async function PUT(
   if (!userId || !orgId) {
     return new NextResponse("unauthorzed", { status: 401 });
   }
-  const userData = await clerkClient.users.getUser(userId);
+  const userData = await currentUser();
   const { cardId } = params;
 
   if (!cardId) {
@@ -56,8 +56,8 @@ export async function PUT(
         entityType: ENTITY_TYPE.DATE,        
         entityTitle: list?.name!,         
         userId: userId,                       
-        userImage: userData.imageUrl,        
-        userName: `${userData.firstName} ${userData.lastName}`,
+        userImage: userData?.imageUrl!,        
+        userName: `${userData?.firstName} ${userData?.lastName}`,
         action: ACTION.UPDATE,                
       },
     })

@@ -7,6 +7,7 @@ const BoardModalProvider = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
   if (!isMounted) {
     return;
   } else {

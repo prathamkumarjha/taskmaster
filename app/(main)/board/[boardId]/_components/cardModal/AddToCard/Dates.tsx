@@ -8,6 +8,8 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useRef, useEffect } from "react";
+import { useDisableStore } from "@/hooks/use-button-disable-store";
+
 import {
   Form,
   FormControl,
@@ -40,7 +42,7 @@ export const Dates = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-
+  const { isDisabled, setDisabled } = useDisableStore();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -51,20 +53,24 @@ export const Dates = ({
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
+      setDisabled(true);
       await axios.put(`/api/card/${cardId}/Date`, { date: data });
     } catch (error) {
       console.log("date update failed", error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   };
 
   const onDelete = async () => {
     try {
+      setDisabled(true);
       await axios.delete(`/api/card/${cardId}/Date`);
     } catch (error) {
       console.log("unable to remove date from the card", error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   };
@@ -135,7 +141,9 @@ export const Dates = ({
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button disabled={isDisabled} type="submit">
+            Submit
+          </Button>
           <Button
             type="button"
             variant="destructive"

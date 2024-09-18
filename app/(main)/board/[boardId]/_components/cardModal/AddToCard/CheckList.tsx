@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useDisableStore } from "@/hooks/use-button-disable-store";
 import {
   Form,
   FormControl,
@@ -22,7 +23,7 @@ export const CheckList = ({ cardId }: { cardId: string }) => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { refresh, setRefresh } = useStore();
-
+  const { isDisabled, setDisabled } = useDisableStore();
   const FormSchema = z.object({
     CheckListName: z.string().min(1, {
       message: "name of checklist must have atleast 1 character",
@@ -55,7 +56,7 @@ export const CheckList = ({ cardId }: { cardId: string }) => {
   }, []);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
+    setDisabled(true);
     try {
       await axios.post(`/api/card/${cardId}/checkList`, {
         CheckListName: data.CheckListName,
@@ -63,6 +64,7 @@ export const CheckList = ({ cardId }: { cardId: string }) => {
     } catch (error) {
       console.log(error);
     } finally {
+      setDisabled(false);
       setRefresh(true);
     }
   };
@@ -94,7 +96,9 @@ export const CheckList = ({ cardId }: { cardId: string }) => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button disabled={isDisabled} type="submit">
+              Submit
+            </Button>
           </form>
         </Form>
       </div>

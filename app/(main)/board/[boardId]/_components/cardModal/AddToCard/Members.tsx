@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { memberInterface } from "./AddToCard";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-refetch-data";
+import { useDisableStore } from "@/hooks/use-button-disable-store";
 
 interface Member {
   id: string;
@@ -50,7 +51,7 @@ export function Members({
   const { refresh, setRefresh } = useStore();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-
+  const { isDisabled, setDisabled } = useDisableStore();
   const {
     data: members = [],
     isLoading,
@@ -113,6 +114,7 @@ export function Members({
     name: string,
     designation: string
   ) => {
+    setDisabled(true);
     try {
       await axios.post(`/api/card/${cardId}/members`, {
         id,
@@ -128,12 +130,14 @@ export function Members({
       console.error("Failed to add person:", error);
     } finally {
       setIsFormOpen(false);
+      setDisabled(false);
       setRefresh(true);
     }
   };
 
   const removeMember = async (id: string) => {
     try {
+      setDisabled(true);
       // Making the DELETE request, with id as a query parameter
       await axios.delete(`/api/card/${cardId}/members`, {
         params: { id },
@@ -154,6 +158,7 @@ export function Members({
       });
     } finally {
       // router.refresh();
+      setDisabled(false);
       setRefresh(true);
     }
   };
@@ -233,8 +238,11 @@ export function Members({
                     </FormItem>
                   )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button disabled={isDisabled} type="submit">
+                  Submit
+                </Button>
                 <Button
+                  disabled={isDisabled}
                   className="hover:bg-red ml-2 bg-gray-600"
                   onClick={() => {
                     setIsFormOpen(false);

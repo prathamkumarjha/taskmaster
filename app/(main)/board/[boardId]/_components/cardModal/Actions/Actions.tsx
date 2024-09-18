@@ -7,6 +7,8 @@ import { useMoveCardModal } from "@/hooks/use-move-card-modal";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { useStore } from "@/hooks/use-refetch-data";
 import { useCardModal } from "@/hooks/use-card-modal";
+import { useState } from "react";
+import { useDisableStore } from "@/hooks/use-button-disable-store";
 
 export default function Actions({
   cardId,
@@ -21,9 +23,13 @@ export default function Actions({
   const MoveCardModal = useMoveCardModal();
   const { refresh, setRefresh } = useStore();
   const cardModal = useCardModal();
-
+  const { isDisabled, setDisabled } = useDisableStore();
   const copyCard = async () => {
+    if (isDisabled) {
+      return;
+    }
     try {
+      setDisabled(true);
       await axios.post(`/api/copyCard/${boardId}`, {
         cardId,
         columnId,
@@ -31,11 +37,16 @@ export default function Actions({
     } catch (error) {
       console.log("an error occured while copying the card", error);
     } finally {
+      setDisabled(false);
       router.refresh();
     }
   };
 
   const deleteCard = async () => {
+    if (isDisabled) {
+      return;
+    }
+    setDisabled(true);
     try {
       await axios.delete(`/api/card/${cardId}`);
     } catch (error) {
@@ -43,6 +54,7 @@ export default function Actions({
     } finally {
       cardModal.onClose();
       // setRefresh(true);
+      setDisabled(false);
       router.refresh();
     }
   };
@@ -51,12 +63,14 @@ export default function Actions({
     <div className="space-y-2 mt-4">
       <div>Actions</div>
       <Button
+        disabled={isDisabled}
         className="w-full bg-gray-600 text-md"
         onClick={() => MoveCardModal.onOpen()}
       >
         <FaArrowRightLong className="text-white mr-2 text-lg" /> Move
       </Button>
       <Button
+        disabled={isDisabled}
         className="w-full bg-gray-600 text-md"
         onClick={() => {
           copyCard();
@@ -65,6 +79,7 @@ export default function Actions({
         <IoCopyOutline className="text-white mr-2" /> copy
       </Button>
       <Button
+        disabled={isDisabled}
         className="w-full bg-gray-600 text-md"
         onClick={() => deleteCard()}
       >

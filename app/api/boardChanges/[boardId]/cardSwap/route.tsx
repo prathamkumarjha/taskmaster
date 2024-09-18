@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 
 interface CardInterface {
   id: string;
@@ -15,7 +15,7 @@ export async function PATCH(
   { params }: { params: { boardId: string } }
 ) {
   const body = await req.json();
-  console.log(body);
+  // console.log(body);
   const { updateableColumn, firstColumn, secondColumn } = body;
 
   try {
