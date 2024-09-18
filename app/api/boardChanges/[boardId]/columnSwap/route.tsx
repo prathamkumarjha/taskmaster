@@ -16,7 +16,7 @@ export async function PATCH(
     const updates = items.map((column, index) => {
       return prisma.list.update({
         where: { id: column.id },
-        data: { order: size - index + 1 },
+        data: { order: size - index },
       });
     });
 
