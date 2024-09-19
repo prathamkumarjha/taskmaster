@@ -206,6 +206,9 @@ const Board: React.FC<{
             })
             .then(() => {
               router.refresh();
+              toast({
+                title: "Card sequence updated",
+              });
             });
         } else {
           // Move card within the same column
@@ -296,12 +299,12 @@ const Board: React.FC<{
           order: index + 1, // Assuming the order starts from 1
         }));
 
-        console.log(updatedItems, "this is updated items");
+        // console.log(updatedItems, "this is updated items");
         items = updatedItems;
         return updatedItems;
       });
 
-      console.log("this is items", items);
+      // console.log("this is items", items);
       //  Swap columns on the server
       await axios.patch(`/api/boardChanges/${params.boardId}/columnSwap`, {
         items,

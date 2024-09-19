@@ -100,30 +100,28 @@ const BoardName: React.FC<BoardNameProps> = ({ BoardName, id, logs }) => {
       />
       <Popover>
         <PopoverTrigger>
-          <Button
-            variant="ghost"
-            className="hover:bg-opacity-15 hover:bg-white rounded-full w-12 h-12 hover:text-white"
-          >
+          <div>
             <BsThreeDotsVertical className="text-lg hover:text-white " />
-          </Button>
+          </div>
         </PopoverTrigger>
-        <PopoverContent className="px-0 mr-2 ">
+
+        <PopoverContent className="px-0 mr-2 shadow-lg ">
           <div className="text-lg flex justify-center border-b w-full border-gray-200">
             Board Actions
           </div>
-          <Button
-            className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25"
+          <div
+            className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 flex justify-center items-center text-lg pt-2"
             onClick={() => handleDeleteName()}
           >
             Delete Board
-          </Button>
+          </div>
           <Sheet>
-            <SheetTrigger className="w-full">
-              <Button className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 ">
+            <SheetTrigger className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 ">
+              <div className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 flex justify-center  text-lg">
                 Board Activity
-              </Button>
+              </div>
             </SheetTrigger>
-            <SheetContent className="bg-black border-black bg-opacity-50 text-white overflow-auto">
+            <SheetContent className="bg-black border-black bg-opacity-50 text-white overflow-auto flex justify-center text-lg">
               <BoardActivity logs={logs} />
             </SheetContent>
           </Sheet>

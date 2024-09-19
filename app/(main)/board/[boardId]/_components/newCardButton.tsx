@@ -77,7 +77,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   if (!isOpen || !(activeColumn === columnId)) {
     return (
       <Button
-        className="bg-white w-full pt-2 text-black hover:bg-white"
+        className="bg-white w-full pt-2 text-black hover:bg-white rounded-none"
         onClick={() => {
           setColumn(columnId);
           onOpen();
@@ -89,10 +89,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   }
 
   return (
-    <div
-      className=" rounded-lg bg-white sticky"
-      ref={refOne as RefObject<HTMLDivElement>}
-    >
+    <div className=" bg-white sticky" ref={refOne as RefObject<HTMLDivElement>}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

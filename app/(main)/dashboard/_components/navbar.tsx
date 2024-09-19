@@ -19,12 +19,13 @@ export default function Nav() {
   const organizationId = organization?.id;
   const router = useRouter();
 
-  useEffect(() => {
-    if (organizationId) {
-      router.push(`/dashboard/${[organizationId]}/boards`);
-    }
-  }, [organizationId, router]);
+  // useEffect(() => {
+  //   if (organizationId) {
+  //     router.push(`/dashboard/${[organizationId]}/boards`);
+  //   }
+  // }, [organizationId, router]);
 
+  console.log(organizationId);
   return (
     <div className="mx-auto  sticky top-0 z-10 text-black ">
       <div className="flex justify-between h-16 px-4">
@@ -61,12 +62,15 @@ export default function Nav() {
 
         <div className="pt-4 flex">
           <div className="mr-4">
-            <OrganizationSwitcher
+            {/* <OrganizationSwitcher
+              afterCreateOrganizationUrl="/organization/:id"
+              afterLeaveOrganizationUrl="/select-org"
+              afterSelectOrganizationUrl="/dashboard/:id"
               appearance={{
                 baseTheme: shadesOfPurple,
               }}
               hidePersonal={true}
-            />
+            /> */}
           </div>
           <UserButton
             appearance={{

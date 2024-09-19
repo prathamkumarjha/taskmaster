@@ -106,7 +106,7 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
 
   if (!newName) {
     return (
-      <div className="text-xl flex justify-between w-full sticky top-0 bg-white pt-2 z-10  ">
+      <div className="text-xl flex justify-between w-full  top-0 pt-2   bg-white">
         <Badge
           onClick={handleNameClick}
           variant="secondary"
@@ -116,11 +116,11 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
         </Badge>
         <Popover>
           <PopoverTrigger>
-            <Button variant="ghost" className="mr-0">
-              <HiDotsVertical />
-            </Button>
+            {/* <Button variant="ghost" className="mr-0"> */}
+            <HiDotsVertical />
+            {/* </Button> */}
           </PopoverTrigger>
-          <PopoverContent className="px-0">
+          <PopoverContent className="px-0 z-1">
             <span className="flex justify-center border-b border-gray-200 margin-black text-md">
               List actions
             </span>

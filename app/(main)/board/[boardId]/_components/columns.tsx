@@ -112,7 +112,7 @@ const Column: React.FC<{
             </div>
           </SortableContext>
 
-          <div className=" sticky bottom-0 w-full ">
+          <div className=" bottom-0 w-full z-[-10]">
             <NewCardButton columnId={ColumnData.id} />
           </div>
         </div>

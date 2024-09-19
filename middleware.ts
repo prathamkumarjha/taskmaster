@@ -6,7 +6,7 @@ export default authMiddleware({publicRoutes: ["/"],
       let path = "/create-organization";
 
       if (auth.orgId) {
-        path = `/dashboard/${auth.orgId}/boards`;
+        path = `/dashboard/${auth.orgId}`;
       }
 
       const orgSelection = new URL(path, req.url);

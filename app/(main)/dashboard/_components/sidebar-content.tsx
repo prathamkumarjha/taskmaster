@@ -8,9 +8,10 @@ import {
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useOrganizationList } from "@clerk/nextjs";
+import { useOrganizationList, useOrganization } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 export default function YourComponent() {
   const router = useRouter();
   const params = useParams();
@@ -20,9 +21,19 @@ export default function YourComponent() {
     },
   });
   const pathname = usePathname();
+  const { organization } = useOrganization();
+  const organizationId = organization?.id;
+  // useEffect(() => {
+  //   if (organizationId) {
+  //     // router.push(`/dashboard/${[organizationId]}/boards`);
+  //     router.refresh();
+  //   }
+  // }, [organizationId, router]);
+
   if (!userMemberships) {
     return null;
   }
+
   return (
     <div>
       <h1 className="text-2xl font-semibold text-white">Workspaces</h1>
@@ -56,15 +67,15 @@ export default function YourComponent() {
                   <div
                     className={cn(
                       "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2 m-1",
-                      pathname ===
-                        `/dashboard/${membership.organization.id}/boards`
+                      pathname === `/dashboard/${membership.organization.id}`
                         ? "bg-blue-600 rounded-l-lg text-white"
                         : ""
                     )}
                     onClick={() => {
-                      setActive &&
-                        setActive({ organization: membership.organization.id });
-                      router.push(`boards`);
+                      // setActive;
+                      // setActive &&
+                      //   setActive({ organization: membership.organization.id });
+                      router.push(`/dashboard/${membership.organization.id}`);
                     }}
                   >
                     <button className="flex">
@@ -81,7 +92,9 @@ export default function YourComponent() {
                   <div
                     className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
-                      console.log("Notifications clicked");
+                      router.push(
+                        `/dashboard/${membership.organization.id}/notification`
+                      );
                     }}
                   >
                     <button className="flex">
