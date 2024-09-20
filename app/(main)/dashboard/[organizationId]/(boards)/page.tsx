@@ -21,9 +21,13 @@ export default async function Page({
   });
 
   return (
-    <div className="space-y-10">
-      <FavoriteWorkspaces workspaces={favorite} />
-      <YourWorkspaces workspaces={board} />
+    <div className="overflow-auto p-2 mt-20">
+      <div className="pb-4">
+        {" "}
+        {/* Add some padding to avoid cutting off the content */}
+        <FavoriteWorkspaces workspaces={favorite} />
+        <YourWorkspaces workspaces={board} />
+      </div>
     </div>
   );
 }

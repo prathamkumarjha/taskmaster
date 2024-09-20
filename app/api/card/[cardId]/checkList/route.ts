@@ -28,7 +28,12 @@ export async function POST(
         id:cardId
       },
 include:{
-  column:true
+  column:{
+   include: {
+    board:true,
+    }
+  },
+ 
 }
     }
   )
@@ -42,6 +47,7 @@ include:{
 
   await prismadb.audit_log.create({
       data: {
+        orgId:list?.column.board.organizationId!,
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
         entityType: ENTITY_TYPE.CHECKLIST,        
@@ -129,13 +135,18 @@ export async function DELETE(
           id:cardId
         },
   include:{
-    column:true
+    column:{
+      include: {
+       board:true,
+       }
+     },
   }
       }
     )
 
   await   prismadb.audit_log.create({
       data: {
+        orgId:list?.column.board.organizationId!,
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
         entityType: ENTITY_TYPE.CHECKLIST,        

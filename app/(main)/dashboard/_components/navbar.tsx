@@ -25,10 +25,9 @@ export default function Nav() {
   //   }
   // }, [organizationId, router]);
 
-  console.log(organizationId);
   return (
-    <div className="mx-auto  sticky top-0 z-10 text-black ">
-      <div className="flex justify-between h-16 px-4">
+    <div className="  text-black bg-custom-blue fixed top-0 h-16 w-full z-10">
+      <div className="flex justify-between h-full px-4">
         <div className="md:hidden flex">
           <Mobile />
           <div className="mt-4 mr-0 text-black">

@@ -42,7 +42,9 @@ export async function PUT(
           id:cardId
         },
   include:{
-    column:true
+    column:{
+      include:{board:true}
+    }
   }
       }
     )
@@ -51,6 +53,7 @@ export async function PUT(
 
    await  prismadb.audit_log.create({
       data: {
+        orgId: list?.column.board.organizationId!,
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
         entityType: ENTITY_TYPE.DATE,        
@@ -101,7 +104,11 @@ export async function DELETE(req: Request,
           id:cardId
         },
   include:{
-    column:true
+    column:{
+      include:{
+        board:true,
+      }
+    }
   }
       }
     )
@@ -110,6 +117,7 @@ export async function DELETE(req: Request,
 
     await prismadb.audit_log.create({
       data: {
+orgId:list?.column.board.organizationId!,
         boardId: list?.column.boardId!,             
         cardId: cardId,                         
         entityType: ENTITY_TYPE.DATE,        

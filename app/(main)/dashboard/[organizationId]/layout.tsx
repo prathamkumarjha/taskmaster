@@ -4,18 +4,12 @@ import Nav from "../_components/navbar";
 
 export default function Page({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      {/* <Nav /> */}
-      <div className="flex text-stone-300">
-        <div className="hidden md:block w-64 overflow-y-auto">
-          <ScrollArea>
-            <Sidebar />
-          </ScrollArea>
-        </div>
-        <div className="flex flex-col w-full">
-          <div className="flex-grow">{children}</div>
-        </div>
-      </div>
+    <div className="flex text-stone-300 bg-custom-blue  h-full ">
+      <ScrollArea className="pt-20 border-r border-blue-900 shadow-lg shadow-blue-900 ">
+        <Sidebar />
+      </ScrollArea>
+
+      {children}
     </div>
   );
 }

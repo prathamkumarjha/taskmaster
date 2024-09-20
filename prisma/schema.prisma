@@ -144,6 +144,7 @@ enum ENTITY_TYPE {
 
 model audit_log {
   id          String      @id @default(uuid())
+  orgId       String
   boardId     String
   cardId      String?
   entityType  ENTITY_TYPE

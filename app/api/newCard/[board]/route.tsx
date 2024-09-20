@@ -38,10 +38,18 @@ export async function POST(
         order: cardOrder.length + 1,
         columnId: columnId,
       },
+      include: {
+        column: {
+          include: {
+            board: true,
+          },
+        },
+      },
     });
 
     await prismadb.audit_log.create({
       data: {
+        orgId: board.column.board.organizationId,
         boardId: params.board,
         cardId: board.id,
         entityType: ENTITY_TYPE.CARD,

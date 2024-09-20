@@ -15,7 +15,7 @@ export default function Mobile() {
       <div className=" flex justify-center ">
         <SheetContent
           side="left"
-          className="w-[300px] bg-blue-950 text-white overflow-auto text-xl "
+          className="w-[300px] bg-custom-blue text-white overflow-auto text-xl border-0 "
         >
           <YourComponent />
         </SheetContent>

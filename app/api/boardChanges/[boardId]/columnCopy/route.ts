@@ -112,8 +112,15 @@ export async function POST(
     );
 
     const userData = await clerkClient.users.getUser(userId);
+
+    const board = await prismadb.board.findUnique({
+      where:{
+       id: params.boardId
+      }
+    })
   await   prismadb.audit_log.create({
       data: {
+        orgId:board?.organizationId!,
         boardId: params.boardId,             
         cardId: null,                         
         entityType: ENTITY_TYPE.LIST,        

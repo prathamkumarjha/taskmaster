@@ -43,10 +43,14 @@ const deleted = await prismadb.list.delete({
       where: {
         id: columnId,
       },
+      include:{
+        board:true
+      }
     });
     const userData = await clerkClient.users.getUser(userId);
    await prismadb.audit_log.create({
       data: {
+        orgId:deleted.board.id,
         boardId:deleted.boardId ,             
         cardId: null,                         
         entityType: ENTITY_TYPE.LIST,        

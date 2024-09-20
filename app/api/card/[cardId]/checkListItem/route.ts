@@ -36,7 +36,11 @@ export async function POST (req:Request, {params}:{params:{cardId:string}}) {
                   id:params.cardId
                 },
           include:{
-            column:true
+            column:{
+              include:{
+                board:true
+              }
+            }
           }
               }
             )
@@ -45,6 +49,7 @@ export async function POST (req:Request, {params}:{params:{cardId:string}}) {
             
         await prismadb.audit_log.create({
             data: {
+              orgId:list?.column.board.organizationId!,
               boardId: list?.column.boardId!,             
               cardId: params.cardId,                         
               entityType: ENTITY_TYPE.TODO,        
@@ -100,12 +105,16 @@ export async function PUT(req:Request, {params}:{params:{cardId:string}}){
             id:params.cardId
           },
     include:{
-      column:true
+      column:{
+        include:{
+          board:true
+        }
+      }
     }
         }
       )
 
-     const todo =     await prismadb.todo.update({
+     const todo =  await prismadb.todo.update({
         where:{
             todoId:todoId
         },
@@ -115,8 +124,9 @@ export async function PUT(req:Request, {params}:{params:{cardId:string}}){
           })
 
           
-      await    prismadb.audit_log.create({
+         prismadb.audit_log.create({
             data: {
+              orgId: list?.column.board.organizationId!, 
               boardId: list?.column.boardId!,             
               cardId: params.cardId,                         
               entityType: ENTITY_TYPE.TODO,        
@@ -167,7 +177,11 @@ export async function DELETE(
             id:params.cardId
           },
     include:{
-      column:true
+      column:{
+        include:{
+          board:true
+        }
+      }
     }
         }
       )
@@ -175,9 +189,11 @@ export async function DELETE(
       const todo = await prismadb.todo.findUnique({
         where:{
           todoId: todoId
-        }
+        },
+        
       })
 
+     
       // Make sure todoId matches your schema field
       const deletedCheckList = await prismadb.todo.delete({
         where: {
@@ -189,6 +205,7 @@ export async function DELETE(
         
        prismadb.audit_log.create({
         data: {
+          orgId:list?.column.board.organizationId!,
           boardId: list?.column.boardId!,             
           cardId: params.cardId,                         
           entityType: ENTITY_TYPE.TODO,        

@@ -336,12 +336,12 @@ const Board: React.FC<{
     //     backgroundAttachment: "fixed",
     //   }}
     // >
-    <div className="mt-16">
+    <div>
       <CardModal />
       <div className="bg-black bg-opacity-75 h-16  w-screen text-4xl pl-4 text-white fixed top-16 flex items-center">
         <BoardName BoardName={BoardData.name} id={BoardData.id} logs={logs} />
       </div>
-      <div className="flex mt-4">
+      <div className="flex mt-28 pt-2">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}

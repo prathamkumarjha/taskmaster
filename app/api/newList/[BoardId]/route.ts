@@ -33,16 +33,19 @@ export async function POST(
     
 
     // sending data to backend if everything is ok!
-    const board = await prismadb.list.create({
+    const data = await prismadb.list.create({
       data: {
         boardId: params.BoardId,
         name:values.listName,
         order,
       },
+      include:{
+        board:true
+      }
     });
-    
     await prismadb.audit_log.create({
       data: {
+        orgId:data?.board.organizationId,
         boardId: params.BoardId,              // Mandatory board ID
         cardId: null,                         // No card involved here, set to null
         entityType: ENTITY_TYPE.LIST,         // You are working with a list
@@ -54,7 +57,7 @@ export async function POST(
       },
     });
     
-    return NextResponse.json(board);
+    return NextResponse.json(data);
   } catch (error) {
     console.log("newBoard_POST", error);
 

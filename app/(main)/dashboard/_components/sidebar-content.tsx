@@ -23,12 +23,6 @@ export default function YourComponent() {
   const pathname = usePathname();
   const { organization } = useOrganization();
   const organizationId = organization?.id;
-  // useEffect(() => {
-  //   if (organizationId) {
-  //     // router.push(`/dashboard/${[organizationId]}/boards`);
-  //     router.refresh();
-  //   }
-  // }, [organizationId, router]);
 
   if (!userMemberships) {
     return null;
@@ -37,6 +31,7 @@ export default function YourComponent() {
   return (
     <div>
       <h1 className="text-2xl font-semibold text-white">Workspaces</h1>
+
       {userMemberships?.data?.map((membership) => (
         <div key={membership.id} className=" flex flex-row  ">
           <Accordion type="single" collapsible className="pt-4">
@@ -118,7 +113,9 @@ export default function YourComponent() {
                     )}
                     onClick={() => {
                       setActive &&
-                        setActive({ organization: membership.organization.id });
+                        setActive({
+                          organization: membership.organization.id,
+                        });
                       router.push(
                         `/dashboard/${membership.organization.id}/settings`
                       );
