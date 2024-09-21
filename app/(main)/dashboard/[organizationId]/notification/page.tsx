@@ -4,7 +4,7 @@ import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import Image from "next/image";
 import { User, Activity, columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
-
+import { auth } from "@clerk/nextjs";
 // Existing Log Type (for reference)
 interface Log {
   id: string;
@@ -88,28 +88,35 @@ const mapLogToActivity = (
   return {
     id: log.id,
     dateAndTime: log.createdAt.toISOString(),
-    user: log.userName,
+    user: {
+      name: log.userName,
+      ImageUrl: log.userImage,
+    } as User,
     change: createNotification(log, boardMap),
     boardName: boardMap[log.boardId] || "Unknown board",
   };
 };
 
-export default async function Notification({
+export default async function Page({
   params,
 }: {
-  params: { organizaionId: string };
+  params: { organizationId: string };
 }) {
   // Fetch logs
+  const { orgId } = auth();
   const logs = await prismadb.audit_log.findMany({
     where: {
-      orgId: params.organizaionId,
+      orgId: params.organizationId,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 
   // Fetch boards and create a map of boardId to boardName
   const boards = await prismadb.board.findMany({
     where: {
-      organizationId: params.organizaionId,
+      organizationId: params.organizationId,
     },
   });
   const boardMap = boards.reduce((acc: { [key: string]: string }, board) => {
@@ -123,7 +130,7 @@ export default async function Notification({
   );
 
   return (
-    <div className="w-full mr-8 overflow-scroll mt-20 flex justify-center px-4">
+    <div className="w-full mr-8  mt-20 flex justify-center px-4">
       <DataTable columns={columns} data={activities} />
     </div>
   );
