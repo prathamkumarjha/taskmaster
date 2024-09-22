@@ -68,7 +68,7 @@ export const BackgroundImages: React.FC<BackgroundImagesProps> = ({
             width={180}
             height={90}
             className={cn(
-              "group relative cursor-pointer bg-muted transition hover:opacity-50",
+              "group relative cursor-pointer bg-muted transition hover:opacity-50 h-full",
               selected === val.urls.regular ? "opacity-50" : ""
             )}
           />

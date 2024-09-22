@@ -12,6 +12,9 @@ import { useOrganizationList, useOrganization } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { FaGear } from "react-icons/fa6";
+import { LuLayoutDashboard } from "react-icons/lu";
+
 export default function YourComponent() {
   const router = useRouter();
   const params = useParams();
@@ -22,7 +25,7 @@ export default function YourComponent() {
   });
   const pathname = usePathname();
   const { organization } = useOrganization();
-  const organizationId = organization?.id;
+  const organizationId = organization?.name;
 
   if (!userMemberships) {
     return null;
@@ -30,15 +33,15 @@ export default function YourComponent() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-white">Workspaces</h1>
+      <h1 className="text-2xl font-semibold text-gray-600">Workspaces</h1>
 
       {userMemberships?.data?.map((membership) => (
         <div key={membership.id} className=" flex flex-row  ">
           <Accordion type="single" collapsible className="pt-4">
             <AccordionItem value={membership.id}>
               <AccordionTrigger>
-                <div className="flex items-center text-white">
-                  <div className="  rounded-full overflow-hidden mr-4 ">
+                <div className="flex items-center justify-center text-black space-x-2">
+                  <div className="  rounded-full overflow-hidden  ">
                     <Image
                       alt="organization logo"
                       src={membership.organization.imageUrl}
@@ -48,7 +51,7 @@ export default function YourComponent() {
                   </div>
                   <span
                     className={cn(
-                      "transition-all duration-300 hover:text-blue-600" &&
+                      "transition-all duration-300 hover:text-blue-600 mx-2" &&
                         params.organizationId === membership.organization.id &&
                         "text-blue-600"
                     )}
@@ -58,35 +61,42 @@ export default function YourComponent() {
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="pl-10 text-white ">
-                  <div
-                    className={cn(
-                      "p-2 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2 m-1",
-                      pathname === `/dashboard/${membership.organization.id}`
-                        ? "bg-blue-600 rounded-l-lg text-white"
-                        : ""
-                    )}
-                    onClick={() => {
-                      // setActive;
-                      // setActive &&
-                      //   setActive({ organization: membership.organization.id });
-                      router.push(`/dashboard/${membership.organization.id}`);
-                    }}
-                  >
-                    <button className="flex">
-                      <Image
+                <div className="pl-10 text-black ">
+                  <div>
+                    <button
+                      className={cn(
+                        " flex p-2 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-lg m-1 w-full",
+                        pathname === `/dashboard/${membership.organization.id}`
+                          ? "bg-blue-200 rounded-l-lg text-blue-600"
+                          : ""
+                      )}
+                      onClick={() => {
+                        // setActive;
+                        setActive &&
+                          setActive({
+                            organization: membership.organization.id,
+                          });
+                        router.push(`/dashboard/${membership.organization.id}`);
+                      }}
+                    >
+                      {/* <Image
                         alt="kanban svg"
                         src="/kanban.svg"
                         width={20}
                         height={20}
                         className="pr-1"
-                      />
+                      /> */}
+                      <LuLayoutDashboard className="h-5 w-5 pr-1" />
                       Boards
                     </button>
                   </div>
                   <div
-                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
+                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-black  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
+                      setActive &&
+                        setActive({
+                          organization: membership.organization.id,
+                        });
                       router.push(
                         `/dashboard/${membership.organization.id}/notification`
                       );
@@ -105,10 +115,10 @@ export default function YourComponent() {
                   </div>
                   <div
                     className={cn(
-                      "p-2 m-1 transition-all duration-300 hover:text-white hover:bg-blue-600 rounded-l-lg pl-2",
+                      "p-2 m-1 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-l-lg pl-2",
                       pathname ===
                         `/dashboard/${membership.organization.id}/settings`
-                        ? "bg-blue-600 rounded-l-lg text-white"
+                        ? "bg-blue-600 rounded-l-lg text-black"
                         : ""
                     )}
                     onClick={() => {
@@ -121,20 +131,14 @@ export default function YourComponent() {
                       );
                     }}
                   >
-                    <button className="flex">
-                      <Image
-                        alt="setting svg"
-                        src="/setting.svg"
-                        width={20}
-                        height={20}
-                        className="pr-1"
-                      />
+                    <button className="flex text-black">
+                      <FaGear className="h-5 w-5 pr-1 text-black" />
                       Settings
                     </button>
                   </div>
 
                   <div
-                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-white  hover:bg-blue-600 rounded-l-lg"
+                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-black  hover:bg-blue-600 rounded-l-lg"
                     onClick={() => {
                       console.log("Plans clicked");
                     }}
