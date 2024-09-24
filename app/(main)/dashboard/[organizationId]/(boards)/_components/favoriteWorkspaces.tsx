@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MdStarRate } from "react-icons/md";
 import axios from "axios";
 import { redirect } from "next/navigation";
-import { MdOutlineStarPurple500 } from "react-icons/md";
+import { IoStarOutline } from "react-icons/io5";
 
 export interface WorkspaceProps {
   id: string;
@@ -26,7 +26,7 @@ const FavoriteWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
     <div className="border-b-2 border-gray-200">
       <div className=" text-2xl font-bold m-4 text-gray-600 flex items-center">
         {/* <IoMdStarOutline  /> */}
-        <MdOutlineStarPurple500 className="text-gray-600 h-8 w-8 mr-2" />
+        <IoStarOutline className="text-gray-600 h-8 w-8 mr-2" />
         Favorites
       </div>
       <div className="m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-hidden">

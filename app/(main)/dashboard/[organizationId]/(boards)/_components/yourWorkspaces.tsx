@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { useBoardModal } from "@/hooks/use-board-modal";
 import { cn } from "@/lib/utils";
 import { IoPersonOutline } from "react-icons/io5";
+import { MAX_FREE_BOARDS } from "@/constants/boards";
+import { getAvailableCount } from "@/lib/orgLimit";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 export interface WorkspaceProps {
   id: string;
@@ -17,18 +20,21 @@ export interface WorkspaceProps {
   favorite: boolean;
 }
 
-const YourWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
-  workspaces,
-}) => {
+const YourWorkspaces: React.FC<{
+  workspaces: WorkspaceProps[];
+  availableCount: number;
+}> = ({ workspaces, availableCount }) => {
   const router = useRouter();
   const boardModal = useBoardModal();
+  const proModal = useProModal();
+  // const availableCount  = getAvailableCount();
   return (
-    <div draggable="false" className="mt-8">
+    <div draggable="false" className="mt-8 w-full">
       <div className="text-3xl flex font-bold m-4 text-gray-600">
         <IoPersonOutline className="mr-2" />
         Your workspace
       </div>
-      <div className="m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-hidden">
+      <div className="m-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-hidden items-center">
         {workspaces.map((workspace) => (
           // <div key={workspace.id} className="relative">
           //   <div className="group h-48 w-72 space-2">
@@ -85,16 +91,24 @@ const YourWorkspaces: React.FC<{ workspaces: WorkspaceProps[] }> = ({
             </p>
           </Link>
         ))}
-        <Button
-          className="h-50 w-100 flex p-20 justify-center items-center space-2 bg-gray-800 md:w-full rounded-lg  hover:bg-gray-700 text-md"
+        <div
+          role="button"
+          className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 items-center justify-center hover:opacity-75 transition text-black"
           onClick={() => {
-            console.log("cicked atleast");
-            boardModal.onOpen();
-            console.log(boardModal);
+            // console.log("cicked atleast");
+            if (MAX_FREE_BOARDS - availableCount == 0) {
+              proModal.onOpen();
+            } else {
+              boardModal.onOpen();
+              // console.log(boardModal);
+            }
           }}
         >
-          Create a new board
-        </Button>
+          <p className="text-sm">Create new board</p>
+          <span className="text-xs">
+            {MAX_FREE_BOARDS - availableCount} boards remaining
+          </span>
+        </div>
       </div>
     </div>
   );

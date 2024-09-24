@@ -28,18 +28,18 @@ export default function Nav() {
   return (
     <div className="  text-black bg-white  fixed top-0 h-16 w-full z-10 shadow-md">
       <div className="flex justify-between h-full px-4">
-        {/* <div className="md:hidden flex">
+        <div className="md:hidden flex">
           <Mobile />
           <div className="mt-4 mr-0 text-black">
             <Button
               variant="outline"
               onClick={boardModal.onOpen}
-              className="text-black"
+              className="text-white bg-green-500"
             >
               Create
             </Button>
           </div>
-        </div> */}
+        </div>
         <div className="hidden  md:block mr-4">
           <div className="flex mt-3">
             <Image
@@ -52,7 +52,11 @@ export default function Nav() {
               TaskMaster
             </span>
             <div className="ml-4">
-              <Button variant="outline" onClick={boardModal.onOpen}>
+              <Button
+                variant="outline"
+                onClick={boardModal.onOpen}
+                className="bg-green-500 hover:bg-green-500 hover:opacity-75 text-white"
+              >
                 Create
               </Button>
             </div>

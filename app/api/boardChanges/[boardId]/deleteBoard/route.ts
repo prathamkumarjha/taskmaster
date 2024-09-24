@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import prismadb from "@/lib/db";
 import { NextResponse } from "next/server";
+import { decreaseAvailableCount } from "@/lib/orgLimit";
 
 export async function DELETE(
   req: Request,
@@ -20,11 +21,18 @@ export async function DELETE(
 
   try {
     // Deleting the board
-    const cardData = await prismadb.board.delete({
+     await prismadb.board.delete({
       where: { id: boardId },
-    });
-
-    return NextResponse.json(cardData);
+    }); 
+     
+    await prismadb.audit_log.deleteMany({
+      where:{
+        boardId:boardId
+      }
+    })
+    await decreaseAvailableCount();
+    
+    return NextResponse.json("board deleted");
   } catch (error) {
     console.error(error);
     return new NextResponse("Internal error", {

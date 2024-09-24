@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -11,6 +11,7 @@ import {
   VisibilityState,
   ColumnFiltersState,
   getFilteredRowModel,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ export function DataTable<TData, Tvalue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -56,49 +58,55 @@ export function DataTable<TData, Tvalue>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 9 } },
+    initialState: { pagination: { pageSize: 7 } },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+
     state: {
-      // sorting,
       columnFilters,
       columnVisibility,
+      sorting,
     },
   });
 
   return (
-    <div className="w-full p-0 flex justify-center">
-      <Input
-        placeholder="Filter emails..."
-        value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-        onChange={(event) =>
-          table.getColumn("email")?.setFilterValue(event.target.value)
-        }
-        className="max-w-sm"
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button>Columns</Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {table
-            .getAllColumns()
-            .filter((column) => column.getCanHide())
-            .map((column) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              );
-            })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <div className="flex items-center py-4"></div>
-
-      <div className="w-full overflow-auto">
+    <div className="w-full p-8 mb-4">
+      <div className="w-full p-0 flex justify-between mb-4">
+        <Input
+          placeholder="Filter changes..."
+          value={(table.getColumn("change")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("change")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm text-black"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>Columns</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {/* <div className="flex items-center py-4"></div> */}
+      </div>
+      <div className="w-full overflow-auto ">
         <div className="rounded-md border-0 w-full p-0">
           <Table className="w-full hover:bg-transparent">
             <TableHeader className="hover:bg-transparent text-white">
@@ -109,7 +117,7 @@ export function DataTable<TData, Tvalue>({
                       <TableHead
                         key={header.id}
                         // Show only first 8 columns on medium to small screens
-                        className={index >= 8 ? "hidden md:table-cell" : ""}
+                        className={index >= 7 ? "hidden md:table-cell" : ""}
                       >
                         {header.isPlaceholder
                           ? null
@@ -129,7 +137,7 @@ export function DataTable<TData, Tvalue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="border-0 hover:bg-blue-600 cursor-pointer"
+                    className="border-0 text-black hover:bg-gray-100  cursor-pointer"
                   >
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell
@@ -159,13 +167,13 @@ export function DataTable<TData, Tvalue>({
           </Table>
         </div>
 
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-end space-x-2 pb-4 mb-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="bg-gray-600 text-white border-0 hover hover:bg-gray-600 hover:text-white hover:opacity-75"
+            className="bg-gray-900 text-white border-0 hover hover:bg-gray-600 hover:text-white hover:opacity-75"
           >
             Previous
           </Button>
@@ -174,7 +182,7 @@ export function DataTable<TData, Tvalue>({
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="bg-gray-600 text-white border-0 hover hover:bg-gray-600 hover:text-white hover:opacity-75"
+            className="bg-gray-900 text-white border-0 hover hover:bg-gray-600 hover:text-white hover:opacity-75"
           >
             Next
           </Button>

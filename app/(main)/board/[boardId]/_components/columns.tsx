@@ -102,19 +102,18 @@ const Column: React.FC<{
   return (
     <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
       <div className="h-[80vh]">
-        <div className=" px-2 mx-4 w-[315px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto ">
+        <div className=" px-2 mx-4 w-[315px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto">
           <SortableContext items={ColumnData.cards}>
             <ColumnName listName={ColumnData.name} id={ColumnData.id} />
             <div className="space-y-4 h-full overflow-auto max-h-full mt-4">
               {ColumnData.cards.map(
                 (card) => card && <Card key={card.id} {...card} />
               )}
+              {/* <div className="text-xl flex justify-between w-full   pt-2   bg-white "> */}
+              <NewCardButton columnId={ColumnData.id} />
+              {/* </div> */}
             </div>
           </SortableContext>
-
-          <div className=" bottom-0 w-full z-[-10]">
-            <NewCardButton columnId={ColumnData.id} />
-          </div>
         </div>
       </div>
     </div>

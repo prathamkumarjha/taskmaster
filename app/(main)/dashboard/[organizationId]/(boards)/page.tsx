@@ -5,6 +5,7 @@ import prismadb from "@/lib/db";
 import { OrganizationName } from "../../_components/organizationName";
 import { useOrganizationList, useOrganization } from "@clerk/nextjs";
 import { Organization } from "@clerk/nextjs/server";
+import { getAvailableCount } from "@/lib/orgLimit";
 
 export default async function Page({
   params,
@@ -24,13 +25,15 @@ export default async function Page({
     },
   });
 
+  const availableCount = await getAvailableCount();
+
   return (
-    <div className="overflow-auto p-8 mt-18 pt-20">
+    <div className="overflow-auto m-8 mt-18 p-2 pt-20 w-full">
       <div className="pb-4">
         {/* Add some padding to avoid cutting off the content */}
         <OrganizationName />
         <FavoriteWorkspaces workspaces={favorite} />
-        <YourWorkspaces workspaces={board} />
+        <YourWorkspaces workspaces={board} availableCount={availableCount} />
       </div>
     </div>
   );

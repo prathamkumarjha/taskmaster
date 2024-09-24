@@ -130,7 +130,7 @@ export default async function Page({
   );
 
   return (
-    <div className="w-full mr-8  mt-20 flex justify-center px-4">
+    <div className="w-full ml-4 mt-20 flex justify-center">
       <DataTable columns={columns} data={activities} />
     </div>
   );

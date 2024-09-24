@@ -93,7 +93,13 @@ export const BoardModal = () => {
         description: "new board created",
       });
       console.log(data?.data?.id);
+
       router.push(`/board/${data.data.id}`);
+      // axios.post(`/api/${organizationId}/newBoard/audit`, {
+      //   boardId: data.data.id,
+      // name: data.data.name,
+      // });
+      router.refresh();
       onClose();
     }
   };
@@ -132,8 +138,8 @@ export const BoardModal = () => {
           </FormItem>
           <div className="flex justify-end space-x-4 text-black">
             <Button
-              className="mt-1 hover:bg-black hover:text-white border-0"
-              variant="outline"
+              className="mt-1  hover:opacity-90 border-0"
+              // variant="ghost"
               disabled={disabled}
               onClick={storeModal.onClose}
               type="button"
@@ -141,8 +147,8 @@ export const BoardModal = () => {
               Cancel
             </Button>
             <Button
-              className="mt-1 hover:bg-black hover:text-white border-0"
-              variant="outline"
+              className="mt-1 bg-green-500 hover:bg-green-500  hover:opacity-90 border-0"
+              // variant="outline"
               disabled={disabled}
               type="submit"
             >

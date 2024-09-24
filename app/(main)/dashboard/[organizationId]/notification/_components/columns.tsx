@@ -5,6 +5,8 @@ export type User = {
   name: string;
   ImageUrl: string;
 };
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type Activity = {
   id: string;
@@ -24,21 +26,46 @@ const formatDate = (isoString: string) => {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   const ampm = date.getHours() >= 12 ? "pm" : "am";
 
-  return `${day}/${month}/${year}, ${hours}:${minutes}${ampm}`;
+  return { day: `${day}/${month}/${year}`, time: `${hours}:${minutes}${ampm}` };
 };
 
 export const columns: ColumnDef<Activity>[] = [
   {
     accessorKey: "dateAndTime",
-    header: "Date and Time",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date and Time
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const dateAndTime = row.getValue("dateAndTime") as string;
-      return <div>{formatDate(dateAndTime)}</div>;
+      return (
+        <div>
+          <div className=" text-bold">{formatDate(dateAndTime).day}</div>
+          <div className="text-gray-400">{formatDate(dateAndTime).time}</div>
+        </div>
+      );
     },
   },
   {
     accessorKey: "user",
-    header: "User",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          User
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const user = row.getValue("user") as User;
 
@@ -51,14 +78,24 @@ export const columns: ColumnDef<Activity>[] = [
             alt="user image"
             className="rounded-full"
           />{" "}
-          <div className="ml-2">{user.name}</div>
+          <div className="ml-2 text-md">{user.name}</div>
         </div>
       );
     },
   },
   {
     accessorKey: "boardName",
-    header: "Board",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Board
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "change",

@@ -106,7 +106,7 @@ const ColumnName: React.FC<ColumnNameProps> = ({ listName, id }) => {
 
   if (!newName) {
     return (
-      <div className="text-xl flex justify-between w-full  top-0 pt-2   bg-white">
+      <div className="text-xl flex justify-between w-full   pt-2   ">
         <Badge
           onClick={handleNameClick}
           variant="secondary"

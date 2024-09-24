@@ -77,7 +77,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
   if (!isOpen || !(activeColumn === columnId)) {
     return (
       <Button
-        className="bg-white w-full pt-2 text-black hover:bg-white rounded-none"
+        className="bg-white w-full text-black hover:bg-white rounded-none"
         onClick={() => {
           setColumn(columnId);
           onOpen();

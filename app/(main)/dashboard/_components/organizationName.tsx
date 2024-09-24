@@ -8,7 +8,7 @@ export const OrganizationName = () => {
 
   if (!isLoaded) return <></>;
 
-  console.log(organization); // Debugging purposes
+  //console.log(organization); // Debugging purposes
 
   return (
     <div className="flex font-semibold text-5xl text-gray-600 mt-10 border-b-2 border-gray-200 pb-2">
