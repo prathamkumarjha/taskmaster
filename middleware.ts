@@ -1,6 +1,6 @@
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-export default authMiddleware({publicRoutes: ["/"],
+export default authMiddleware({publicRoutes: ["/","/api/webhook"],
   afterAuth(auth, req){
     if (auth.userId && auth.isPublicRoute) {
       let path = "/create-organization";

@@ -6,6 +6,7 @@ import { OrganizationName } from "../../_components/organizationName";
 import { useOrganizationList, useOrganization } from "@clerk/nextjs";
 import { Organization } from "@clerk/nextjs/server";
 import { getAvailableCount } from "@/lib/orgLimit";
+import { checkSubscription } from "@/lib/subscription";
 
 export default async function Page({
   params,
@@ -26,6 +27,7 @@ export default async function Page({
   });
 
   const availableCount = await getAvailableCount();
+  const isPro = await checkSubscription();
 
   return (
     <div className="overflow-auto m-8 mt-18 p-2 pt-20 w-full">
@@ -33,7 +35,11 @@ export default async function Page({
         {/* Add some padding to avoid cutting off the content */}
         <OrganizationName />
         <FavoriteWorkspaces workspaces={favorite} />
-        <YourWorkspaces workspaces={board} availableCount={availableCount} />
+        <YourWorkspaces
+          workspaces={board}
+          availableCount={availableCount}
+          isPro={isPro}
+        />
       </div>
     </div>
   );

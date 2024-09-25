@@ -6,7 +6,6 @@ const SettingsPage = () => {
     <div className="pl-6 pt-10 flex items-center justify-center">
       <OrganizationProfile
         appearance={{
-          baseTheme: shadesOfPurple,
           elements: {
             rootBox: {
               boxShadow: "none",

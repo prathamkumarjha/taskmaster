@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs";
 import { incrementAvailableCount, hasAvailableCount } from "@/lib/orgLimit";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import { clerkClient } from "@clerk/nextjs/server";
-
+import { checkSubscription } from "@/lib/subscription";
 export async function POST(
   req: Request,
   { params }: { params: { orgId: string } }
@@ -13,7 +13,7 @@ export async function POST(
     const { userId, orgId } = auth();
     const body = await req.json();
 
-    // const isPro = await checkSubscription();
+    const isPro = await checkSubscription();
     const { name, imageUrl } = body;
 
     if (!userId || !orgId) {
@@ -22,7 +22,7 @@ export async function POST(
 
     const userData = await clerkClient.users.getUser(userId);
     const canCreate = await hasAvailableCount();
-    if (!canCreate) {
+    if (!canCreate && !isPro) {
       return {
         error:
           "you have already created maximum number of boards allowed for free tier!",

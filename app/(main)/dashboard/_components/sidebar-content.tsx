@@ -14,6 +14,14 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { FaGear } from "react-icons/fa6";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
+import { FaPlus } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import NewOrganizationForm from "./newOrganizationForm";
 
 export default function YourComponent() {
   const router = useRouter();
@@ -33,8 +41,16 @@ export default function YourComponent() {
 
   return (
     <div className="mr-6 w-full">
-      <div className="text-2xl font-semibold text-gray-600  mr-4 flex justify-end ">
+      <div className="text-2xl font-semibold text-gray-600  mr-4 flex justify-center ">
         Workspaces
+        <Popover>
+          <PopoverTrigger className="m-2">
+            <FaPlus />
+          </PopoverTrigger>
+          <PopoverContent>
+            <NewOrganizationForm />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {userMemberships?.data?.map((membership) => (

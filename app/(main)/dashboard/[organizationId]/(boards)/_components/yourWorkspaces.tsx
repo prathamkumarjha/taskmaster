@@ -23,7 +23,8 @@ export interface WorkspaceProps {
 const YourWorkspaces: React.FC<{
   workspaces: WorkspaceProps[];
   availableCount: number;
-}> = ({ workspaces, availableCount }) => {
+  isPro: boolean;
+}> = ({ workspaces, availableCount, isPro }) => {
   const router = useRouter();
   const boardModal = useBoardModal();
   const proModal = useProModal();
@@ -96,7 +97,7 @@ const YourWorkspaces: React.FC<{
           className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 items-center justify-center hover:opacity-75 transition text-black"
           onClick={() => {
             // console.log("cicked atleast");
-            if (MAX_FREE_BOARDS - availableCount == 0) {
+            if (MAX_FREE_BOARDS - availableCount == 0 && !isPro) {
               proModal.onOpen();
             } else {
               boardModal.onOpen();
@@ -105,9 +106,13 @@ const YourWorkspaces: React.FC<{
           }}
         >
           <p className="text-sm">Create new board</p>
-          <span className="text-xs">
-            {MAX_FREE_BOARDS - availableCount} boards remaining
-          </span>
+          {isPro ? (
+            <span className="text-xs">Unlimited</span>
+          ) : (
+            <span className="text-xs">
+              {MAX_FREE_BOARDS - availableCount} boards remaining
+            </span>
+          )}
         </div>
       </div>
     </div>

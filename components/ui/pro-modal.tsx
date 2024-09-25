@@ -4,6 +4,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useProModal } from "@/hooks/use-pro-modal";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 // import { useAction } from "@/hooks/use-action";
 // import { stripeRedirect } from "@/actions/stripe-redirect";
 import { toast } from "sonner";
@@ -23,6 +26,28 @@ export const ProModal = () => {
   //   const onClick = () => {
   //     execute({});
   //   };
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+  const onClick = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post("/api/stripe");
+
+      const { data } = response;
+
+      if (data?.data) {
+        router.push(data.data);
+      } else {
+        throw new Error("Invalid response data");
+      }
+    } catch (error) {
+      toast.error("error in redirectiing to stripe");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Dialog open={proModal.isOpen} onOpenChange={proModal.onClose}>
@@ -46,8 +71,8 @@ export const ProModal = () => {
             </ul>
           </div>
           <Button
-            // disabled={isLoading}
-            // onClick={onClick}
+            disabled={isLoading}
+            onClick={() => onClick()}
             className="w-full"
             // variant="primary"
           >
