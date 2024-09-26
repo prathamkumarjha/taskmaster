@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { NextResponse } from 'next/server';
+// import { NextResponse } from 'next/server';
 
-export  async function GET(req: NextApiRequest, res: NextApiResponse) {
+export  async function GET(req: NextRequest, res: NextResponse) {
   try {
     // Ensure the API key is defined
    
