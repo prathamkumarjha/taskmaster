@@ -78,7 +78,7 @@ const Column: React.FC<{
   if (isDragging) {
     return (
       <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
-        <div className="h-[80vh]">
+        <div className="h-[80vh] opacity-20">
           <div className=" px-2 mx-4 w-[315px] h-30 bg-white rounded-lg shadow-lg max-h-full overflow-auto">
             <SortableContext items={ColumnData.cards}>
               <ColumnName listName={ColumnData.name} id={ColumnData.id} />

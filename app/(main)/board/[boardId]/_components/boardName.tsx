@@ -110,7 +110,7 @@ const BoardName: React.FC<BoardNameProps> = ({ BoardName, id, logs }) => {
             Board Actions
           </div>
           <div
-            className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 flex justify-center items-center text-lg pt-2"
+            className="w-full  bg-white text-black  hover:bg-gray-300 hover:bg-opacity-25 flex justify-center items-center text-lg pt-2 cursor-pointer"
             onClick={() => handleDeleteName()}
           >
             Delete Board

@@ -93,7 +93,7 @@ const NewCardButton: React.FC<NewListButtonInterface> = ({ columnId }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 mt-4 pb-2"
+          className="space-y-4 mt-4 p-2"
         >
           <FormField
             control={form.control}
