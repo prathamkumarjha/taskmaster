@@ -23,10 +23,13 @@ export async function POST(
     const userData = await clerkClient.users.getUser(userId);
     const canCreate = await hasAvailableCount();
     if (!canCreate && !isPro) {
-      return {
-        error:
-          "you have already created maximum number of boards allowed for free tier!",
-      };
+      return NextResponse.json(
+        {
+          error:
+            "You have reached the maximum number of boards allowed for the free tier!",
+        },
+        { status: 403 }
+      );
     }
 
     if (!name) {
