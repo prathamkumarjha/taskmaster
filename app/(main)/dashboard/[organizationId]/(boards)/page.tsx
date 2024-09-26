@@ -30,7 +30,7 @@ export default async function Page({
   const isPro = await checkSubscription();
 
   return (
-    <div className="overflow-auto m-8 mt-18 p-2 pt-20 w-full">
+    <div className="overflow-auto  mt-18  pt-20 w-full">
       <div className="pb-4">
         {/* Add some padding to avoid cutting off the content */}
         <OrganizationName />

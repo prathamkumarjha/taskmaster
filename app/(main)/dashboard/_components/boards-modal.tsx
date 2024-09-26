@@ -138,7 +138,7 @@ export const BoardModal = () => {
           </FormItem>
           <div className="flex justify-end space-x-4 text-black">
             <Button
-              className="mt-1  hover:opacity-90 border-0"
+              className="mt-1 text-black hover:opacity-85 bg-gray-200 hover:text-black border-0 hover:bg-gray-200"
               // variant="ghost"
               disabled={disabled}
               onClick={storeModal.onClose}
@@ -147,8 +147,8 @@ export const BoardModal = () => {
               Cancel
             </Button>
             <Button
-              className="mt-1 bg-green-500 hover:bg-green-500  hover:opacity-90 border-0"
-              // variant="outline"
+              className="flex justify-end space-x-4 text-white"
+              // className="flex justify-end space-x-4 text-black"
               disabled={disabled}
               type="submit"
             >

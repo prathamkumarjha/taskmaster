@@ -41,16 +41,21 @@ export default function YourComponent() {
 
   return (
     <div className="mr-6 w-full">
-      <div className="text-2xl font-semibold text-gray-600  mr-4 flex justify-center ">
+      <div className="text-2xl font-semibold text-gray-600  flex justify-center  items-center ">
         Workspaces
-        <Popover>
-          <PopoverTrigger className="m-2">
-            <FaPlus />
-          </PopoverTrigger>
+        {/* <Popover>
+          <PopoverTrigger className="m-2"> */}
+        <Button
+          className="ml-2  bg-white  hover:opacity-85 hover:bg-gray-100"
+          onClick={() => router.push("/create-organization")}
+        >
+          <FaPlus className="text-black" />
+        </Button>
+        {/* </PopoverTrigger>
           <PopoverContent>
             <NewOrganizationForm />
-          </PopoverContent>
-        </Popover>
+          </PopoverContent> 
+         </Popover> */}
       </div>
 
       {userMemberships?.data?.map((membership) => (
@@ -68,14 +73,15 @@ export default function YourComponent() {
                 <div className="flex items-center justify-center w-full text-black space-x-2">
                   <div className="flex justify-between w-full items-center p-6">
                     <div className="flex items-center">
-                      <div className="  rounded-full overflow-hidden flex justify-between mr-2">
-                        <Image
-                          alt="organization logo"
-                          src={membership.organization.imageUrl}
-                          width={50}
-                          height={40}
-                        />
-                      </div>
+                      {/* <div className="  rounded-full overflow-hidden flex justify-between mr-2"> */}
+                      <Image
+                        alt="organization logo"
+                        src={membership.organization.imageUrl}
+                        width={40}
+                        height={40}
+                        className="rounded-full mr-2"
+                      />
+                      {/* </div> */}
                       <div
                         className={cn(
                           "transition-all duration-300 hover:text-blue-600 py-0" &&
@@ -121,7 +127,13 @@ export default function YourComponent() {
                     </button>
                   </div>
                   <div
-                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-black  hover:bg-blue-600 rounded-lg"
+                    className={cn(
+                      " flex p-2 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-lg  w-full",
+                      pathname ===
+                        `/dashboard/${membership.organization.id}/notification`
+                        ? "bg-blue-200 rounded-lg text-blue-600"
+                        : ""
+                    )}
                     onClick={() => {
                       setActive &&
                         setActive({
@@ -144,13 +156,7 @@ export default function YourComponent() {
                     </button>
                   </div>
                   <div
-                    className={cn(
-                      "p-2 m-1 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-lg pl-2",
-                      pathname ===
-                        `/dashboard/${membership.organization.id}/settings`
-                        ? "bg-blue-600 rounded-l-lg text-black"
-                        : ""
-                    )}
+                    className="w-full"
                     onClick={() => {
                       setActive &&
                         setActive({
@@ -161,19 +167,44 @@ export default function YourComponent() {
                       );
                     }}
                   >
-                    <button className="flex text-black">
+                    <button
+                      className={cn(
+                        " flex p-2 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-lg w-full ",
+                        pathname ===
+                          `/dashboard/${membership.organization.id}/settings`
+                          ? "bg-blue-200 rounded-lg text-blue-600"
+                          : ""
+                      )}
+                    >
                       <FaGear className="h-5 w-5 pr-1 text-black" />
                       Settings
                     </button>
                   </div>
 
                   <div
-                    className="p-2 m-1 cursor-pointer transition-all duration-300 hover:text-black  hover:bg-blue-600 rounded-lg"
+                    className={cn(
+                      " flex p-2 transition-all duration-300 hover:text-black hover:bg-blue-600 rounded-lg ",
+                      pathname ===
+                        `/dashboard/${membership.organization.id}/plans`
+                        ? "bg-blue-200 rounded-lg text-blue-600"
+                        : ""
+                    )}
                     onClick={() => {
                       console.log("Plans clicked");
                     }}
                   >
-                    <button className="flex">
+                    <button
+                      className="flex"
+                      onClick={() => {
+                        setActive &&
+                          setActive({
+                            organization: membership.organization.id,
+                          });
+                        router.push(
+                          `/dashboard/${membership.organization.id}/plans`
+                        );
+                      }}
+                    >
                       <Image
                         alt="rupee svg"
                         src="/rupee.svg"

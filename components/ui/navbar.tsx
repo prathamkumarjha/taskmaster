@@ -16,16 +16,22 @@ export const Navbar = () => {
             />
             <h1 className="text-white text-3xl font-bold ml-2">TaskMaster</h1>
           </div>
-          {/* <div className="flex">
+          <div className="flex">
             <Button
               variant="outline"
-              className="mr-4"
-              onClick={() => router.push("/auth")}
+              className="bg-black hover:bg-black hover:text-white hover:bg-opacity-65 text-white border-0 mr-2"
+              onClick={() => router.push("/sign-up")}
             >
-              Sign-up
+              Try TaskMaster
             </Button>
-            <Button variant="secondary">Log-in</Button>
-          </div> */}
+            <Button
+              variant="secondary"
+              className="mr-4 bg-gray-200 text-black"
+              onClick={() => router.push("/sign-in")}
+            >
+              Log-in
+            </Button>
+          </div>
         </div>
       </div>
     </nav>

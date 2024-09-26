@@ -9,7 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  // provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -58,7 +59,7 @@ model Comment {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   parentId  String?
-  parent    Comment?  @relation("parentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent    Comment?  @relation("parentChild", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   children  Comment[] @relation("parentChild")
   userId    String
   userImage String    @db.Text

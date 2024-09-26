@@ -7,7 +7,7 @@ import { BackgroundGradientAnimation } from "@/components/ui/background-gradient
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <div className=" h-screen  overflow-hidden">
-      <Nav />
+      <NavProvider />
 
       <BoardModalProvider />
       <ProModal />

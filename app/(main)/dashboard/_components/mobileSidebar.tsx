@@ -6,16 +6,16 @@ export default function Mobile() {
   return (
     <Sheet>
       <SheetTrigger>
-        <Button asChild className="mt-4 bg-transparent">
+        <Button asChild className="mt-4 bg-transparent bg-black m-2">
           <div className="text-white text-xl ">
-            <GiHamburgerMenu className="w-full h-full" />
+            <GiHamburgerMenu className="w-full h-full text-gray-100" />
           </div>
         </Button>
       </SheetTrigger>
       <div className=" flex justify-center ">
         <SheetContent
           side="left"
-          className="w-[300px] bg-custom-blue text-white overflow-auto text-xl border-0 "
+          className="w-[300px] bg-white text-black overflow-auto text-xl border-0"
         >
           <YourComponent />
         </SheetContent>
